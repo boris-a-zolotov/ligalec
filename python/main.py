@@ -4,10 +4,12 @@ import math
 
 # Size of the network and the array it is stored in
 networksize = 100
+maximumDegree = 0
+
 edgeArray = np.zeros((networksize, networksize), dtype=int)
 neighbors = np.zeros((networksize, networksize), dtype=int)
-degrees = np.zeros((networksize), dtype=int)
-payoffs = np.zeros((networksize), dtype=int)
+degrees = np.zeros(networksize, dtype=int)
+payoffs = np.zeros(networksize, dtype=int)
 players = [random.random() for q in range(networksize)]
 
 
@@ -38,21 +40,21 @@ def barabalbert(size: int):
             edgeArray[j][i] = 1
         degrees[i] = 3
 
-        for i in range(4, size):  # add the following vertices
-            idegrees = degrees[0:i]  # array of the degrees of all the previous vertices
-            isum = 8 * i - 20  # sum of degrees of existing vertices (math!..)
-            chosenvert = [0 for p in range(4)]
-            changedvert = [0 for p in range(4)]
-            while not (aredistinct(changedvert)):  # check there are no double connections
-                for p in range(4):
-                    chosenvert[p] = random.randint(1, isum)  # sample a number
-                    changedvert[p] = \
-                        findinlist(idegrees, chosenvert[p])  # convert it into index
-            degrees[i] += 4
+    for i in range(4, size):  # add the following vertices
+        idegrees = degrees[0:i]  # array of the degrees of all the previous vertices
+        isum = 8 * i - 20  # sum of degrees of existing vertices (math!..)
+        chosenvert = [0 for p in range(4)]
+        changedvert = [0 for p in range(4)]
+        while not (aredistinct(changedvert)):  # check there are no double connections
             for p in range(4):
-                edgeArray[i][changedvert[p]] = 1
-                edgeArray[changedvert[p]][i] = 1
-                degrees[changedvert[p]] += 1
+                chosenvert[p] = random.randint(1, isum)  # sample a number
+                changedvert[p] = \
+                    findinlist(idegrees, chosenvert[p])  # convert it into index
+        degrees[i] += 4
+        for p in range(4):
+            edgeArray[i][changedvert[p]] = 1
+            edgeArray[changedvert[p]][i] = 1
+            degrees[changedvert[p]] += 1
 
 
 # Return 0 with probability p
@@ -66,13 +68,17 @@ def sample(p: float) -> int:
 
 # Yield—go game
 def game(p, q: float) -> tuple:
+    allgames += 1
     a = sample(p)
     b = sample(q)
     if a == 0 and b == 0:  # yield=0, go=1
+        yields += 1
         return -1, -1
     elif a == 0 and b == 1:
+        yields += 1
         return 1, 2
     elif a == 1 and b == 0:
+        yields += 1
         return 2, 1
     elif a == 0 and b == 0:
         return -8, -8
@@ -90,50 +96,37 @@ def compressneighbors():
 
 
 def main():
+    print("draw (0,4) -- (12,4)")
+
     barabalbert(networksize)
 
     compressneighbors()
 
-
-
-
-
-
-    # initialize description of system progress
-    saveddose = 2
-    dose = 1
     steps = 0
-    totalsteps = 0
 
     # make sure the system does not change AND stays in this state for long enough
-    while (abs(saveddose - dose) > stabdose) or (steps < 25):
-        totalsteps += 1
-        saveddose = dose
+    while (steps < 300):
+        allgames = 0
+        yields = 0
 
         for i in range(networksize):
             payoffs[i] = sum([game(players[i], players[neighbors[i][j]])[0]
                               for j in range(degrees[i])])
-            # payoff is the sum, important: neighbor
 
             if degrees[i] != 0:  # there can be empty vertices, then the randomizer fails
                 j = random.randint(0, degrees[i] - 1)
                 jindex = neighbors[i][j]
                 if edgeArray[i][jindex] == 0:
                     print("fubar")
-                probij = (payoffs[jindex] - payoffs[i]) / (dmax * max(degrees[i], degrees[jindex]))
-                # formula from the assignment
-                isample = sample(probij)
-                if isample == 1:
-                    savedplay = players[i]
-                    players[i] = 1 - players[i]
+                if payoffs[jindex] > payoffs[i]:
+                    players[i] += (players[jindex] - players[i]) * \
+                                  (payoffs[jindex] - payoffs[i]) / \
+                                  (max(degrees[i], degrees[jindex]))
 
-        dose = sum(players) / networksize  # calculations regarding the stability of the system
-        if saveddose - dose <= stabdose:
-            steps += 1
-        else:
-            steps = 0
-        # print(saveddose, dose, steps)
-    print(totalsteps, dose)
+        yieldDose = yields / allgames
+        print("-- (0.016 * ", steps, " cm, 4 * ", yieldDose, " cm)")
+
+    print(";")
 
 
 main()
