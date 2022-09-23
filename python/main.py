@@ -9,7 +9,7 @@ degrees = [0 for p in range(networksize)]
 
 
 # Check that the elements of a given array are distinct
-def areDistinct(x: list) -> bool:
+def aredistinct(x: list) -> bool:
     f = True
     for p in range(len(x)):
         for q in range(p + 1, len(x)):
@@ -19,7 +19,7 @@ def areDistinct(x: list) -> bool:
 
 
 # Sample an array index, where array elements are probabilities
-def findInList(arr: list, n: int) -> int:
+def findinlist(arr: list, n: int) -> int:
     i = 0
     while n > arr[i]:
         n -= arr[i]
@@ -28,12 +28,28 @@ def findInList(arr: list, n: int) -> int:
 
 
 # Generate a Barabasi—Albert graph
-def barabAlbert(size: int)
+def barabalbert(size: int):
     for i in range(4):  # start with a complete graph on 4 vertices
         for j in range(i):
             edgeArray[i][j] = 1
             edgeArray[j][i] = 1
         degrees[i] = 3
+
+        for i in range(4, size):                     # add the following vertices
+            idegrees = degrees[0:i]                         # array of the degrees of all the previous vertices
+            isum = 8 * i - 20                               # sum of degrees of existing vertices (math!..)
+            chosenvert = [0 for p in range(4)]
+            changedvert = [0 for p in range(4)]
+            while not (aredistinct(changedvert)):           # check there are no double connections
+                for p in range(4):
+                    chosenvert[p] = random.randint(1, isum) # sample a number
+                    changedvert[p] = \
+                        findinlist(idegrees, chosenvert[p])  # convert it into index
+            degrees[i] += 4
+            for p in range(4):
+                edgeArray[i][changedvert[p]] = 1
+                edgeArray[changedvert[p]][i] = 1
+                degrees[changedvert[p]] += 1
 
 
 
@@ -66,30 +82,10 @@ def prisoners(a, b: int) -> tuple:
 
 
 def main():
-    networksize = 10000
-    edgar = [[0 for p in range(networksize)] for q in range(networksize)]
-    degrees = [0 for p in range(networksize)]
 
-    for i in range(4):  # start with a complete graph on 4 vertices
-        for j in range(i):
-            edgar[i][j] = 1
-            edgar[j][i] = 1
-        degrees[i] = 3
+    barabalbert(networksize)
 
-    for i in range(4, networksize):
-        idegrees = degrees[0:i]
-        isum = 8 * i - 20
-        chosenvert = [0 for p in range(4)]
-        changedvert = [0 for p in range(4)]
-        while not (aredistinct(changedvert)):  # check there are no double connections
-            for p in range(4):
-                chosenvert[p] = random.randint(1, isum)  # sample a number
-                changedvert[p] = findinlist(idegrees, chosenvert[p])  # convert it into index
-        degrees[i] += 4
-        for p in range(4):
-            edgar[i][changedvert[p]] = 1
-            edgar[changedvert[p]][i] = 1
-            degrees[changedvert[p]] += 1
+
 
     dmax = max(t, 1) - min(0, -0.1)  # constant in the denominator
     neighbors = [[0 for p in range(networksize)] for q in range(networksize)]
@@ -99,7 +95,7 @@ def main():
     for i in range(networksize):  # compress list of neighbors so it's linear size
         k = 0
         for j in range(networksize):
-            if edgar[i][j] == 1:
+            if edgeArray[i][j] == 1:
                 neighbors[i][k] = j
                 k += 1  # in the end k==degrees[i]
 
@@ -122,7 +118,7 @@ def main():
             if degrees[i] != 0:  # there can be empty vertices, then the randomizer fails
                 j = random.randint(0, degrees[i] - 1)
                 jindex = neighbors[i][j]
-                if edgar[i][jindex] == 0:
+                if edgeArray[i][jindex] == 0:
                     print("fubar")
                 probij = (payoffs[jindex] - payoffs[i]) / (dmax * max(degrees[i], degrees[jindex]))
                 # formula from the assignment
