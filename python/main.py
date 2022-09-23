@@ -2,8 +2,14 @@ import random
 import numpy as np
 import math
 
+# Size of the network and the array it is stored in
+networksize = 10000
+edgeArray = [[0 for p in range(networksize)] for q in range(networksize)]
+degrees = [0 for p in range(networksize)]
 
-def aredistinct(x: list) -> bool:
+
+# Check that the elements of a given array are distinct
+def areDistinct(x: list) -> bool:
     f = True
     for p in range(len(x)):
         for q in range(p + 1, len(x)):
@@ -12,12 +18,51 @@ def aredistinct(x: list) -> bool:
     return f
 
 
-def findinlist(arr: list, n: int) -> int:
+# Sample an array index, where array elements are probabilities
+def findInList(arr: list, n: int) -> int:
     i = 0
     while n > arr[i]:
         n -= arr[i]
         i += 1
     return i
+
+
+# Generate a Barabasi—Albert graph
+def barabAlbert(size: int)
+    for i in range(4):  # start with a complete graph on 4 vertices
+        for j in range(i):
+            edgeArray[i][j] = 1
+            edgeArray[j][i] = 1
+        degrees[i] = 3
+
+
+
+
+
+
+# change the decision (or return 1) with probability p
+def sample(p: float) -> int:
+    x = random.random()
+    if x > p:
+        return 0
+    else:
+        return 1
+
+
+t = 999999  # t can be changed
+stabdose = 0.015  # when we think the state is stable
+
+
+# prisoner's dilemma
+def prisoners(a, b: int) -> tuple:
+    if a == 1 and b == 1:
+        return 1, 1
+    elif a == 0 and b == 1:
+        return t, -0.1
+    elif a == 1 and b == 0:
+        return -0.1, t
+    elif a == 0 and b == 0:
+        return 0, 0
 
 
 def main():
@@ -46,42 +91,53 @@ def main():
             edgar[changedvert[p]][i] = 1
             degrees[changedvert[p]] += 1
 
-    networkmean = np.mean(degrees)
-    networkdevia = np.std(degrees)
+    dmax = max(t, 1) - min(0, -0.1)  # constant in the denominator
+    neighbors = [[0 for p in range(networksize)] for q in range(networksize)]
+    players = [random.randint(0, 1) for q in range(networksize)]
+    payoffs = [0 for p in range(networksize)]  # NEW: total payoffs of all players
 
-    print(networkmean, networkdevia)
+    for i in range(networksize):  # compress list of neighbors so it's linear size
+        k = 0
+        for j in range(networksize):
+            if edgar[i][j] == 1:
+                neighbors[i][k] = j
+                k += 1  # in the end k==degrees[i]
 
-    histogram = [0 for q in range(networksize)]
+    # initialize description of system progress
+    saveddose = 2
+    dose = 1
+    steps = 0
+    totalsteps = 0
 
-    for q in range(networksize):
-        histogram[degrees[q]] += 1
+    # make sure the system does not change AND stays in this state for long enough
+    while (abs(saveddose - dose) > stabdose) or (steps < 25):
+        totalsteps += 1
+        saveddose = dose
 
-    histogram = histogram[4:networksize]  # crop zeros from histogram
+        for i in range(networksize):
+            payoffs[i] = sum([prisoners(players[i], players[neighbors[i][j]])[0]
+                              for j in range(degrees[i])])
+            # payoff is the sum, important: neighbor
 
-    cycl = 0
+            if degrees[i] != 0:  # there can be empty vertices, then the randomizer fails
+                j = random.randint(0, degrees[i] - 1)
+                jindex = neighbors[i][j]
+                if edgar[i][jindex] == 0:
+                    print("fubar")
+                probij = (payoffs[jindex] - payoffs[i]) / (dmax * max(degrees[i], degrees[jindex]))
+                # formula from the assignment
+                isample = sample(probij)
+                if isample == 1:
+                    savedplay = players[i]
+                    players[i] = 1 - players[i]
 
-    # determine where there are significant number of vertices,
-    # we don't want to plot 10000 points
-    while histogram[cycl] > 4 and histogram[cycl + 1] > 4:
-        print("(", cycl, " * 0.33 cm,", histogram[cycl], "* 0.002 cm) --", end=' ')
-        cycl += 1
-
-    loghistogram = [math.log(histogram[p]) for p in range(cycl)]  # log points
-    logscale = [math.log(p + 4) for p in range(cycl)]  # shifted log scale
-
-    print(" ")
-
-    # plot logged points in tikz
-    for i in range(cycl):
-        print("(", logscale[i], ",", loghistogram[i], ") --", end=' ')
-
-    fitted = np.polyfit(logscale, loghistogram, 1)
-
-    print(" ")
-
-    # plot fitted line in tikz
-    print("\\draw[domain =", logscale[0], ":", logscale[cycl - 1], ", smooth, variable = \\x]",
-          "plot({\\x}, {", fitted[0], "* \\x +", fitted[1], "});")
+        dose = sum(players) / networksize  # calculations regarding the stability of the system
+        if saveddose - dose <= stabdose:
+            steps += 1
+        else:
+            steps = 0
+        #print(saveddose, dose, steps)
+    print(totalsteps, dose)
 
 
 main()
