@@ -3,8 +3,10 @@ import numpy as np
 import math
 
 # Size of the network and the array it is stored in
-networksize = 100
+networksize = 5000
 maximumDegree = 0
+allgames = 0
+yields = 0
 
 edgeArray = np.zeros((networksize, networksize), dtype=int)
 neighbors = np.zeros((networksize, networksize), dtype=int)
@@ -43,8 +45,8 @@ def barabalbert(size: int):
     for i in range(4, size):  # add the following vertices
         idegrees = degrees[0:i]  # array of the degrees of all the previous vertices
         isum = 8 * i - 20  # sum of degrees of existing vertices (math!..)
-        chosenvert = [0 for p in range(4)]
-        changedvert = [0 for p in range(4)]
+        chosenvert = np.zeros(4, dtype=int)
+        changedvert = np.zeros(4, dtype=int)
         while not (aredistinct(changedvert)):  # check there are no double connections
             for p in range(4):
                 chosenvert[p] = random.randint(1, isum)  # sample a number
@@ -68,9 +70,13 @@ def sample(p: float) -> int:
 
 # Yield—go game
 def game(p, q: float) -> tuple:
+    global allgames
+    global yields
+
     allgames += 1
     a = sample(p)
     b = sample(q)
+
     if a == 0 and b == 0:  # yield=0, go=1
         yields += 1
         return -1, -1
@@ -80,7 +86,7 @@ def game(p, q: float) -> tuple:
     elif a == 1 and b == 0:
         yields += 1
         return 2, 1
-    elif a == 0 and b == 0:
+    elif a == 1 and b == 1:
         return -8, -8
 
 
@@ -96,22 +102,28 @@ def compressneighbors():
 
 
 def main():
-    print("draw (0,4) -- (12,4)")
+    global allgames
+    global yields
+
+    print("\\draw (0,4) -- (12,4) (12,3) -- (0,3) (12,0) -- (0,0)")
 
     barabalbert(networksize)
 
     compressneighbors()
 
+    totalsteps = 250
     steps = 0
 
     # make sure the system does not change AND stays in this state for long enough
-    while (steps < 300):
+    while steps < totalsteps:
         allgames = 0
         yields = 0
 
         for i in range(networksize):
-            payoffs[i] = sum([game(players[i], players[neighbors[i][j]])[0]
-                              for j in range(degrees[i])])
+            gamearray = [game(players[i], players[neighbors[i][j]])[0]
+                         for j in range(degrees[i])]
+
+            payoffs[i] = sum(gamearray)
 
             if degrees[i] != 0:  # there can be empty vertices, then the randomizer fails
                 j = random.randint(0, degrees[i] - 1)
@@ -123,8 +135,11 @@ def main():
                                   (payoffs[jindex] - payoffs[i]) / \
                                   (max(degrees[i], degrees[jindex]))
 
-        yieldDose = yields / allgames
-        print("-- (0.016 * ", steps, " cm, 4 * ", yieldDose, " cm)")
+        yielddose = yields / allgames
+        xcoord = 12 / totalsteps * steps
+        ycoord = 4 * yielddose
+        print("-- (", xcoord, " cm, ", ycoord, " cm) ", sep="", end="")
+        steps += 1
 
     print(";")
 
