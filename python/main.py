@@ -3,9 +3,12 @@ import numpy as np
 import math
 
 # Size of the network and the array it is stored in
-networksize = 10000
+networksize = 100
 edgeArray = [[0 for p in range(networksize)] for q in range(networksize)]
+neighbors = [[0 for p in range(networksize)] for q in range(networksize)]
 degrees = [0 for p in range(networksize)]
+payoffs = [0 for p in range(networksize)]
+players = [random.random() for q in range(networksize)]
 
 
 # Check that the elements of a given array are distinct
@@ -75,20 +78,26 @@ def game(p, q: float) -> tuple:
         return -8, -8
 
 
-def main():
-    barabalbert(networksize)
-
-    dmax = max(t, 1) - min(0, -0.1)  # constant in the denominator
-    neighbors = [[0 for p in range(networksize)] for q in range(networksize)]
-    players = [random.randint(0, 1) for q in range(networksize)]
-    payoffs = [0 for p in range(networksize)]  # NEW: total payoffs of all players
-
-    for i in range(networksize):  # compress list of neighbors so it's linear size
+# Compress list of neighbors so it's linear size:
+# Convert 1's for edges to the list of the numbers of adjacent vertices
+def compressneighbors():
+    for i in range(networksize):
         k = 0
         for j in range(networksize):
             if edgeArray[i][j] == 1:
                 neighbors[i][k] = j
                 k += 1  # in the end k==degrees[i]
+
+
+def main():
+    barabalbert(networksize)
+
+    compressneighbors()
+
+
+
+
+
 
     # initialize description of system progress
     saveddose = 2
