@@ -35,14 +35,14 @@ def barabalbert(size: int):
             edgeArray[j][i] = 1
         degrees[i] = 3
 
-        for i in range(4, size):                     # add the following vertices
-            idegrees = degrees[0:i]                         # array of the degrees of all the previous vertices
-            isum = 8 * i - 20                               # sum of degrees of existing vertices (math!..)
+        for i in range(4, size):  # add the following vertices
+            idegrees = degrees[0:i]  # array of the degrees of all the previous vertices
+            isum = 8 * i - 20  # sum of degrees of existing vertices (math!..)
             chosenvert = [0 for p in range(4)]
             changedvert = [0 for p in range(4)]
-            while not (aredistinct(changedvert)):           # check there are no double connections
+            while not (aredistinct(changedvert)):  # check there are no double connections
                 for p in range(4):
-                    chosenvert[p] = random.randint(1, isum) # sample a number
+                    chosenvert[p] = random.randint(1, isum)  # sample a number
                     changedvert[p] = \
                         findinlist(idegrees, chosenvert[p])  # convert it into index
             degrees[i] += 4
@@ -52,40 +52,31 @@ def barabalbert(size: int):
                 degrees[changedvert[p]] += 1
 
 
-
-
-
-
-# change the decision (or return 1) with probability p
+# Return 0 with probability p
 def sample(p: float) -> int:
     x = random.random()
-    if x > p:
+    if x <= p:
         return 0
     else:
         return 1
 
 
-t = 999999  # t can be changed
-stabdose = 0.015  # when we think the state is stable
-
-
-# prisoner's dilemma
-def prisoners(a, b: int) -> tuple:
-    if a == 1 and b == 1:
-        return 1, 1
+# Yield—go game
+def game(p, q: float) -> tuple:
+    a = sample(p)
+    b = sample(q)
+    if a == 0 and b == 0:  # yield=0, go=1
+        return -1, -1
     elif a == 0 and b == 1:
-        return t, -0.1
+        return 1, 2
     elif a == 1 and b == 0:
-        return -0.1, t
+        return 2, 1
     elif a == 0 and b == 0:
-        return 0, 0
+        return -8, -8
 
 
 def main():
-
     barabalbert(networksize)
-
-
 
     dmax = max(t, 1) - min(0, -0.1)  # constant in the denominator
     neighbors = [[0 for p in range(networksize)] for q in range(networksize)]
@@ -111,7 +102,7 @@ def main():
         saveddose = dose
 
         for i in range(networksize):
-            payoffs[i] = sum([prisoners(players[i], players[neighbors[i][j]])[0]
+            payoffs[i] = sum([game(players[i], players[neighbors[i][j]])[0]
                               for j in range(degrees[i])])
             # payoff is the sum, important: neighbor
 
@@ -132,7 +123,7 @@ def main():
             steps += 1
         else:
             steps = 0
-        #print(saveddose, dose, steps)
+        # print(saveddose, dose, steps)
     print(totalsteps, dose)
 
 
