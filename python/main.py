@@ -4,10 +4,10 @@ import math
 
 # Size of the network and the array it is stored in
 networksize = 100
-edgeArray = [[0 for p in range(networksize)] for q in range(networksize)]
-neighbors = [[0 for p in range(networksize)] for q in range(networksize)]
-degrees = [0 for p in range(networksize)]
-payoffs = [0 for p in range(networksize)]
+edgeArray = np.zeros((networksize, networksize), dtype=int)
+neighbors = np.zeros((networksize, networksize), dtype=int)
+degrees = np.zeros((networksize), dtype=int)
+payoffs = np.zeros((networksize), dtype=int)
 players = [random.random() for q in range(networksize)]
 
 
@@ -78,7 +78,7 @@ def game(p, q: float) -> tuple:
         return -8, -8
 
 
-# Compress list of neighbors so it's linear size:
+# Compress list of neighbors, so it's linear size:
 # Convert 1's for edges to the list of the numbers of adjacent vertices
 def compressneighbors():
     for i in range(networksize):
