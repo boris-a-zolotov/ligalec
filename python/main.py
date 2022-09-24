@@ -3,12 +3,13 @@ import numpy as np
 import math
 
 # Size of the network and the array it is stored in
-networksize = 1600
+networksize = 1200
 maximumDegree = 0
 allgames = 0
 yields = 0
-totalsteps = 600
+totalsteps = 700
 steps = 0
+damage = 11
 
 edgeArray = np.zeros((networksize, networksize), dtype=int)
 neighbors = np.zeros((networksize, networksize), dtype=int)
@@ -86,10 +87,9 @@ def game(p, q: float) -> tuple:
         yields += 1
         return 1, 2
     elif a == 1 and b == 0:
-        yields += 1
         return 2, 1
     elif a == 1 and b == 1:
-        return -8, -8
+        return -damage, -damage
 
 
 # Compress list of neighbors, so it's linear size:
@@ -143,6 +143,7 @@ def main():
 
             payoffs[i] = sum(gamearray)
 
+        for i in range(networksize):
             if degrees[i] != 0:  # there can be empty vertices, then the randomizer fails
                 j = random.randint(0, degrees[i] - 1)
                 jindex = neighbors[i][j]
@@ -151,7 +152,8 @@ def main():
                 if payoffs[jindex] > payoffs[i]:
                     players[i] += (players[jindex] - players[i]) * \
                                   (payoffs[jindex] - payoffs[i]) / \
-                                  (max(degrees[i], degrees[jindex])) / 10
+                                  (max(degrees[i], degrees[jindex])) / \
+                                  (damage + 2)
 
         yielddose = yields / allgames
         xcoord = 12 / totalsteps * steps
@@ -159,8 +161,8 @@ def main():
 
         ydstring += "-- (%f, %f) " % (xcoord, ycoord)
 
-        if steps % (totalsteps//5) == 0:
-            histogram(players, 283)
+        if steps % (totalsteps // 5) == 0:
+            histogram(players, 491)
 
         steps += 1
 
