@@ -1,19 +1,21 @@
 import random
 import numpy as np
+
 # import math
 
 # Size of the network and the array it is stored in
-networksize = 6400
+networksize = 800
 maximumDegree = 0
-totalsteps = 500
-steps = 0
+totalsteps = 1100
+gamerepetitions = 13
+
 damage = 11
 noiseprob = 1 / 160
 
 edgeArray = np.full((networksize, networksize), False, dtype=bool)
 neighbors = np.zeros((networksize, networksize), dtype=int)
 degrees = np.zeros(networksize, dtype=int)
-players = [random.randint(0, 1) for q in range(networksize)]
+gameres = np.zeros((totalsteps, gamerepetitions))
 
 
 # Check that the elements of a given array are distinct
@@ -84,7 +86,6 @@ def locate(query, owner: int):
 
 # Yield—go game
 def game(p, q: int) -> tuple:
-
     if p == 0 and q == 0:  # yield=0, go=1
         return -1, -1
     elif p == 0 and q == 1:
@@ -97,7 +98,6 @@ def game(p, q: int) -> tuple:
 
 def main():
     global totalsteps
-    global steps
 
     barabalbert(networksize)
 
@@ -105,42 +105,47 @@ def main():
 
     projectednash = (damage + 1) / (damage + 4)
 
-    ydstring = "\n\\begin{tikzpicture}\n\\draw (0,4) -- (12,4) (12,4 * %f) -- (0,4 * %f) (12,0) -- (0,0)" % (
+    for repet in range(gamerepetitions):
+        print(repet, end=" ")
+        steps = 0
+        players = [random.randint(0, 1) for q in range(networksize)]
+
+        while steps < totalsteps:
+            haveplayedarray = np.full((networksize, networksize), False, dtype=bool)
+            payoffs = np.zeros(networksize)
+
+            for i in range(networksize):
+                for j in range(degrees[i]):
+                    if not haveplayedarray[i][j]:
+                        jindex = neighbors[i][j]
+                        ijplay = game(players[i], players[jindex])
+                        payoffs[i] += ijplay[0]
+                        payoffs[jindex] += ijplay[1]
+                        haveplayedarray[i][j] = True
+                        haveplayedarray[jindex][locate(i, jindex)] = True
+
+            for i in range(networksize):
+                if degrees[i] != 0:  # there can be empty vertices, then the randomizer fails
+                    j = random.randint(0, degrees[i] - 1)
+                    jindex = neighbors[i][j]
+                    if payoffs[jindex] > payoffs[i]:
+                        switchprob = (payoffs[jindex] - payoffs[i]) / \
+                                     (max(degrees[i], degrees[jindex])) / \
+                                     (damage + 2)
+                        if sample(switchprob) == 0:
+                            players[i] = players[jindex]
+
+            gameres[steps][repet] = 1 - sum(players) / networksize
+
+            steps += 1
+
+    ydstring = "\n\n\\begin{tikzpicture}\n\\draw (0,4) -- (12,4) (12,4 * %f) -- (0,4 * %f) (12,0) -- (0,0)" % (
         projectednash, projectednash)
 
-    # make sure the system does not change AND stays in this state for long enough
-    while steps < totalsteps:
-        haveplayedarray = np.full((networksize, networksize), False, dtype=bool)
-        payoffs = np.zeros(networksize)
-
-        for i in range(networksize):
-            for j in range(degrees[i]):
-                if not haveplayedarray[i][j]:
-                    jindex = neighbors[i][j]
-                    ijplay = game(players[i], players[jindex])
-                    payoffs[i] += ijplay[0]
-                    payoffs[jindex] += ijplay[1]
-                    haveplayedarray[i][j] = True
-                    haveplayedarray[jindex][locate(i, jindex)] = True
-
-        for i in range(networksize):
-            if degrees[i] != 0:  # there can be empty vertices, then the randomizer fails
-                j = random.randint(0, degrees[i] - 1)
-                jindex = neighbors[i][j]
-                if payoffs[jindex] > payoffs[i]:
-                    switchprob = (payoffs[jindex] - payoffs[i]) / \
-                                 (max(degrees[i], degrees[jindex])) / \
-                                 (damage + 2)
-                    if sample(switchprob) == 0:
-                        players[i] = players[jindex]
-
-        yielddose = 1 - sum(players) / networksize
-        xcoord = 12 / totalsteps * steps
-        ycoord = 4 * yielddose
-
+    for s in range(totalsteps):
+        xcoord = 12 / totalsteps * s
+        ycoord = 4 * np.average(gameres[s])
         ydstring += "-- (%f, %f) " % (xcoord, ycoord)
-
-        steps += 1
 
     ydstring += ";\n\\end{tikzpicture}\n"
 
