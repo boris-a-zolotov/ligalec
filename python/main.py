@@ -3,13 +3,12 @@ import numpy as np
 import math
 
 # Size of the network and the array it is stored in
-networksize = 5500
-maximumDegree = 0
+networksize = 5500  # Number of agents playing
 allgames = 0
 yields = 0
-totalsteps = 900
+totalsteps = 900  # Number of steps for the emulation
 steps = 0
-damage = 11
+damage = 11  # The damage when two hawks are fighting
 noiseprob = 1 / 350
 
 edgeArray = np.full((networksize, networksize), False, dtype=bool)

@@ -1,14 +1,11 @@
 import random
 import numpy as np
 
-# Size of the network and the array it is stored in
-networksize = 800
-maximumDegree = 0
-totalsteps = 1100
-gamerepetitions = 13
-
-damage = 11
-noiseprob = 1 / 160
+# Global parameters
+networksize = 800  # Number of agents playing
+totalsteps = 1100  # Number of steps for the emulation
+gamerepetitions = 13  # Number of game repetitions averaged over
+damage = 11  # The damage when two hawks are fighting
 
 edgeArray = np.full((networksize, networksize), False, dtype=bool)
 neighbors = np.zeros((networksize, networksize), dtype=int)
