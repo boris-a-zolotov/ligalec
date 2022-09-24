@@ -3,18 +3,18 @@ import numpy as np
 import math
 
 # Size of the network and the array it is stored in
-networksize = 1200
+networksize = 6400
 maximumDegree = 0
 allgames = 0
 yields = 0
-totalsteps = 400
+totalsteps = 500
 steps = 0
 damage = 11
+noiseprob = 1 / 160
 
 edgeArray = np.full((networksize, networksize), False, dtype=bool)
 neighbors = np.zeros((networksize, networksize), dtype=int)
 degrees = np.zeros(networksize, dtype=int)
-payoffs = np.zeros(networksize, dtype=int)
 players = [random.random() for q in range(networksize)]
 
 
@@ -94,12 +94,12 @@ def game(p, q: float) -> tuple:
     global allgames
     global yields
 
-    allgames += 1
+    allgames += 2
     a = sample(p)
     b = sample(q)
 
     if a == 0 and b == 0:  # yield=0, go=1
-        yields += 1
+        yields += 2
         return -1, -1
     elif a == 0 and b == 1:
         yields += 1
@@ -138,7 +138,10 @@ def main():
 
     compressneighbors()
 
-    ydstring = "\n\\begin{tikzpicture}\n\\draw (0,4) -- (12,4) (12,3) -- (0,3) (12,0) -- (0,0)"
+    projectednash = (damage + 1) / (damage + 4)
+
+    ydstring = "\n\\begin{tikzpicture}\n\\draw (0,4) -- (12,4) (12,4 * %f) -- (0,4 * %f) (12,0) -- (0,0)" % (
+        projectednash, projectednash)
 
     # make sure the system does not change AND stays in this state for long enough
     while steps < totalsteps:
@@ -146,6 +149,7 @@ def main():
         yields = 0
 
         haveplayedarray = np.full((networksize, networksize), False, dtype=bool)
+        payoffs = np.zeros(networksize)
 
         for i in range(networksize):
             for j in range(degrees[i]):
@@ -161,13 +165,16 @@ def main():
             if degrees[i] != 0:  # there can be empty vertices, then the randomizer fails
                 j = random.randint(0, degrees[i] - 1)
                 jindex = neighbors[i][j]
-                if edgeArray[i][jindex] == 0:
-                    print("fubar")
-                if payoffs[jindex] > payoffs[i]:
-                    players[i] += (players[jindex] - players[i]) * \
-                                  (payoffs[jindex] - payoffs[i]) / \
-                                  (max(degrees[i], degrees[jindex])) / \
-                                  (damage + 2)
+                if sample(noiseprob) == 0:
+                    players[i] = projectednash + 0.4 * (random.random() - 0.5)
+                else:
+                    if payoffs[jindex] > payoffs[i]:
+                        players[i] += (players[jindex] - players[i]) * \
+                                      (payoffs[jindex] - payoffs[i]) / \
+                                      (max(degrees[i], degrees[jindex])) / \
+                                      (damage + 2)
+                        if players[i] > 1 or players[i] < 0:
+                            print("FAIL", payoffs[i], payoffs[jindex], degrees[i], degrees[jindex])
 
         yielddose = yields / allgames
         xcoord = 12 / totalsteps * steps
@@ -176,7 +183,7 @@ def main():
         ydstring += "-- (%f, %f) " % (xcoord, ycoord)
 
         if steps % (totalsteps // 5) == 0:
-            histogram(players, 491)
+            histogram(players, 263)
 
         steps += 1
 
