@@ -7,6 +7,8 @@ networksize = 5000
 maximumDegree = 0
 allgames = 0
 yields = 0
+totalsteps = 250
+steps = 0
 
 edgeArray = np.zeros((networksize, networksize), dtype=int)
 neighbors = np.zeros((networksize, networksize), dtype=int)
@@ -16,7 +18,7 @@ players = [random.random() for q in range(networksize)]
 
 
 # Check that the elements of a given array are distinct
-def aredistinct(x: list) -> bool:
+def aredistinct(x: np.ndarray) -> bool:
     f = True
     for p in range(len(x)):
         for q in range(p + 1, len(x)):
@@ -101,18 +103,32 @@ def compressneighbors():
                 k += 1  # in the end k==degrees[i]
 
 
+def histogram(arr: list, cols: int):
+    hists = np.zeros(cols, dtype=int)
+
+    for p in range(len(arr)):
+        hists[math.floor(arr[p] * cols)] += 1
+
+    hmax = np.max(hists)
+
+    xstep = 12 / cols
+    for p in range(cols):
+        xhcoord = 12 / cols * p
+        yhcoord = 4 * hists[p] / hmax
+        print("\\fill[red] (", xhcoord, ", -5) rectangle ++(", xstep, ", ", yhcoord, "); ", sep="", end="")
+
+
 def main():
     global allgames
     global yields
-
-    print("\\draw (0,4) -- (12,4) (12,3) -- (0,3) (12,0) -- (0,0)")
+    global totalsteps
+    global steps
 
     barabalbert(networksize)
 
     compressneighbors()
 
-    totalsteps = 250
-    steps = 0
+    print("\\draw (0,4) -- (12,4) (12,3) -- (0,3) (12,0) -- (0,0)", end=" ")
 
     # make sure the system does not change AND stays in this state for long enough
     while steps < totalsteps:
@@ -133,15 +149,19 @@ def main():
                 if payoffs[jindex] > payoffs[i]:
                     players[i] += (players[jindex] - players[i]) * \
                                   (payoffs[jindex] - payoffs[i]) / \
-                                  (max(degrees[i], degrees[jindex]))
+                                  (max(degrees[i], degrees[jindex])) / 10
 
         yielddose = yields / allgames
         xcoord = 12 / totalsteps * steps
         ycoord = 4 * yielddose
+
         print("-- (", xcoord, " cm, ", ycoord, " cm) ", sep="", end="")
+
         steps += 1
 
     print(";")
+    histogram(players, 283)
+    print("")
 
 
 main()
