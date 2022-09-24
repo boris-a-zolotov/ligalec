@@ -3,14 +3,14 @@ import numpy as np
 import math
 
 # Size of the network and the array it is stored in
-networksize = 6400
+networksize = 5500
 maximumDegree = 0
 allgames = 0
 yields = 0
-totalsteps = 500
+totalsteps = 900
 steps = 0
 damage = 11
-noiseprob = 1 / 160
+noiseprob = 1 / 350
 
 edgeArray = np.full((networksize, networksize), False, dtype=bool)
 neighbors = np.zeros((networksize, networksize), dtype=int)

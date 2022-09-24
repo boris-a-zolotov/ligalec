@@ -1,8 +1,6 @@
 import random
 import numpy as np
 
-# import math
-
 # Size of the network and the array it is stored in
 networksize = 800
 maximumDegree = 0
