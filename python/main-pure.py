@@ -1,12 +1,10 @@
 import random
 import numpy as np
-import math
+# import math
 
 # Size of the network and the array it is stored in
 networksize = 6400
 maximumDegree = 0
-allgames = 0
-yields = 0
 totalsteps = 500
 steps = 0
 damage = 11
@@ -15,17 +13,12 @@ noiseprob = 1 / 160
 edgeArray = np.full((networksize, networksize), False, dtype=bool)
 neighbors = np.zeros((networksize, networksize), dtype=int)
 degrees = np.zeros(networksize, dtype=int)
-players = [random.random() for q in range(networksize)]
+players = [random.randint(0, 1) for q in range(networksize)]
 
 
 # Check that the elements of a given array are distinct
 def aredistinct(x: np.ndarray) -> bool:
-    f = True
-    for p in range(len(x)):
-        for q in range(p + 1, len(x)):
-            if x[p] == x[q]:
-                f = False
-    return f
+    return len(set(x)) == len(x)
 
 
 # Sample an array index, where array elements are probabilities
@@ -90,47 +83,19 @@ def locate(query, owner: int):
 
 
 # Yield—go game
-def game(p, q: float) -> tuple:
-    global allgames
-    global yields
+def game(p, q: int) -> tuple:
 
-    allgames += 2
-    a = sample(p)
-    b = sample(q)
-
-    if a == 0 and b == 0:  # yield=0, go=1
-        yields += 2
+    if p == 0 and q == 0:  # yield=0, go=1
         return -1, -1
-    elif a == 0 and b == 1:
-        yields += 1
+    elif p == 0 and q == 1:
         return 1, 2
-    elif a == 1 and b == 0:
-        yields += 1
+    elif p == 1 and q == 0:
         return 2, 1
-    elif a == 1 and b == 1:
+    elif p == 1 and q == 1:
         return -damage, -damage
 
 
-def histogram(arr: list, cols: int):
-    hists = np.zeros(cols, dtype=int)
-
-    for p in range(len(arr)):
-        hists[math.floor(arr[p] * cols)] += 1
-
-    hmax = np.max(hists)
-    xstep = 12 / cols
-
-    print("\n\\begin{tikzpicture}")
-    for p in range(cols):
-        xhcoord = 12 / cols * p
-        yhcoord = 4 * hists[p] / hmax
-        print("\\fill[red] (", xhcoord, ", 0) rectangle ++(", xstep, ", ", yhcoord, "); ", sep="", end="")
-    print("\n\\end{tikzpicture}\n")
-
-
 def main():
-    global allgames
-    global yields
     global totalsteps
     global steps
 
@@ -145,9 +110,6 @@ def main():
 
     # make sure the system does not change AND stays in this state for long enough
     while steps < totalsteps:
-        allgames = 0
-        yields = 0
-
         haveplayedarray = np.full((networksize, networksize), False, dtype=bool)
         payoffs = np.zeros(networksize)
 
@@ -165,25 +127,18 @@ def main():
             if degrees[i] != 0:  # there can be empty vertices, then the randomizer fails
                 j = random.randint(0, degrees[i] - 1)
                 jindex = neighbors[i][j]
-                if sample(noiseprob) == 0:
-                    players[i] = projectednash + 0.4 * (random.random() - 0.5)
-                else:
-                    if payoffs[jindex] > payoffs[i]:
-                        players[i] += (players[jindex] - players[i]) * \
-                                      (payoffs[jindex] - payoffs[i]) / \
-                                      (max(degrees[i], degrees[jindex])) / \
-                                      (damage + 2)
-                        if players[i] > 1 or players[i] < 0:
-                            print("FAIL", payoffs[i], payoffs[jindex], degrees[i], degrees[jindex])
+                if payoffs[jindex] > payoffs[i]:
+                    switchprob = (payoffs[jindex] - payoffs[i]) / \
+                                 (max(degrees[i], degrees[jindex])) / \
+                                 (damage + 2)
+                    if sample(switchprob) == 0:
+                        players[i] = players[jindex]
 
-        yielddose = yields / allgames
+        yielddose = 1 - sum(players) / networksize
         xcoord = 12 / totalsteps * steps
         ycoord = 4 * yielddose
 
         ydstring += "-- (%f, %f) " % (xcoord, ycoord)
-
-        if steps % (totalsteps // 5) == 0:
-            histogram(players, 263)
 
         steps += 1
 
