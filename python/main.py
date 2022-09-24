@@ -7,11 +7,11 @@ networksize = 1200
 maximumDegree = 0
 allgames = 0
 yields = 0
-totalsteps = 700
+totalsteps = 400
 steps = 0
 damage = 11
 
-edgeArray = np.zeros((networksize, networksize), dtype=int)
+edgeArray = np.full((networksize, networksize), False, dtype=bool)
 neighbors = np.zeros((networksize, networksize), dtype=int)
 degrees = np.zeros(networksize, dtype=int)
 payoffs = np.zeros(networksize, dtype=int)
@@ -41,8 +41,8 @@ def findinlist(arr: list, n: int) -> int:
 def barabalbert(size: int):
     for i in range(4):  # start with a complete graph on 4 vertices
         for j in range(i):
-            edgeArray[i][j] = 1
-            edgeArray[j][i] = 1
+            edgeArray[i][j] = True
+            edgeArray[j][i] = True
         degrees[i] = 3
 
     for i in range(4, size):  # add the following vertices
@@ -57,8 +57,8 @@ def barabalbert(size: int):
                     findinlist(idegrees, chosenvert[p])  # convert it into index
         degrees[i] += 4
         for p in range(4):
-            edgeArray[i][changedvert[p]] = 1
-            edgeArray[changedvert[p]][i] = 1
+            edgeArray[i][changedvert[p]] = True
+            edgeArray[changedvert[p]][i] = True
             degrees[changedvert[p]] += 1
 
 
@@ -69,6 +69,24 @@ def sample(p: float) -> int:
         return 0
     else:
         return 1
+
+
+# Compress list of neighbors, so it's linear size:
+# Convert 1's for edges to the list of the numbers of adjacent vertices
+def compressneighbors():
+    for i in range(networksize):
+        k = 0
+        for j in range(networksize):
+            if edgeArray[i][j]:
+                neighbors[i][k] = j
+                k += 1  # in the end k==degrees[i]
+
+
+def locate(query, owner: int):
+    global neighbors
+    for p in range(degrees[owner]):
+        if neighbors[owner][p] == query:
+            return p
 
 
 # Yield—go game
@@ -87,20 +105,10 @@ def game(p, q: float) -> tuple:
         yields += 1
         return 1, 2
     elif a == 1 and b == 0:
+        yields += 1
         return 2, 1
     elif a == 1 and b == 1:
         return -damage, -damage
-
-
-# Compress list of neighbors, so it's linear size:
-# Convert 1's for edges to the list of the numbers of adjacent vertices
-def compressneighbors():
-    for i in range(networksize):
-        k = 0
-        for j in range(networksize):
-            if edgeArray[i][j] == 1:
-                neighbors[i][k] = j
-                k += 1  # in the end k==degrees[i]
 
 
 def histogram(arr: list, cols: int):
@@ -137,11 +145,17 @@ def main():
         allgames = 0
         yields = 0
 
-        for i in range(networksize):
-            gamearray = [game(players[i], players[neighbors[i][j]])[0]
-                         for j in range(degrees[i])]
+        haveplayedarray = np.full((networksize, networksize), False, dtype=bool)
 
-            payoffs[i] = sum(gamearray)
+        for i in range(networksize):
+            for j in range(degrees[i]):
+                if not haveplayedarray[i][j]:
+                    jindex = neighbors[i][j]
+                    ijplay = game(players[i], players[jindex])
+                    payoffs[i] += ijplay[0]
+                    payoffs[jindex] += ijplay[1]
+                    haveplayedarray[i][j] = True
+                    haveplayedarray[jindex][locate(i, jindex)] = True
 
         for i in range(networksize):
             if degrees[i] != 0:  # there can be empty vertices, then the randomizer fails
