@@ -4,17 +4,28 @@ import math
 
 # Size of the network and the array it is stored in
 networksize = 5500  # Number of agents playing
-allgames = 0
-yields = 0
+allgames = 0  # Total number of games per step; actually double
+yields = 0  # Number of yields: if two players yield, than +=2
 totalsteps = 900  # Number of steps for the emulation
-steps = 0
+steps = 0  # Current number of steps of the game completed
 damage = 11  # The damage when two hawks are fighting
 noiseprob = 1 / 350
 
+# На самом деле, в данной постановке задачи
+# процесс сходится куда угодно. Если все игроки имеют одну
+# и ту же выигрышную стратегию, то она вполне себе стабильна.
+# Поэтому приходится насильно сэмплить несколько игроков
+# каждый ход рядом с равновесием Нэша.
+
 edgeArray = np.full((networksize, networksize), False, dtype=bool)
+# A 1 is put if there is an edge
+
 neighbors = np.zeros((networksize, networksize), dtype=int)
+# Indices of a vertex's neighbors in increasing order
+
 degrees = np.zeros(networksize, dtype=int)
 players = [random.random() for q in range(networksize)]
+# Mixed strategies: probabilities of yielding
 
 
 # Check that the elements of a given array are distinct

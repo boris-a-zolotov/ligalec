@@ -8,9 +8,15 @@ gamerepetitions = 13  # Number of game repetitions averaged over
 damage = 11  # The damage when two hawks are fighting
 
 edgeArray = np.full((networksize, networksize), False, dtype=bool)
+# A 1 is put if there is an edge
+
 neighbors = np.zeros((networksize, networksize), dtype=int)
+# Indices of a vertex's neighbors in increasing order
+
 degrees = np.zeros(networksize, dtype=int)
 gameres = np.zeros((totalsteps, gamerepetitions))
+# To perform the averaging afterwards, the ratios of
+# yielding players are put into an array
 
 
 # Check that the elements of a given array are distinct
