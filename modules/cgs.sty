@@ -104,6 +104,11 @@
 
 \setcounter{tocdepth}{1}
 
+\newcommand{\ft}[1]{
+   \frametitle{#1\hfill
+      \raisebox{-1.62mm}{\includegraphics[height=0.76cm]{modules/znaniye}}}
+}
+
 \makeatletter
 \patchcmd{\beamer@sectionintoc}
   {\vfill}

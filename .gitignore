@@ -133,6 +133,7 @@ python/.idea/*
 python/venv/*
 
 *.aux
+*.bak
 *.nav
 *.out
 *.snm
