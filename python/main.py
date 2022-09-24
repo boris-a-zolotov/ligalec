@@ -3,11 +3,11 @@ import numpy as np
 import math
 
 # Size of the network and the array it is stored in
-networksize = 5000
+networksize = 1600
 maximumDegree = 0
 allgames = 0
 yields = 0
-totalsteps = 250
+totalsteps = 600
 steps = 0
 
 edgeArray = np.zeros((networksize, networksize), dtype=int)
@@ -110,12 +110,14 @@ def histogram(arr: list, cols: int):
         hists[math.floor(arr[p] * cols)] += 1
 
     hmax = np.max(hists)
-
     xstep = 12 / cols
+
+    print("\n\\begin{tikzpicture}")
     for p in range(cols):
         xhcoord = 12 / cols * p
         yhcoord = 4 * hists[p] / hmax
-        print("\\fill[red] (", xhcoord, ", -5) rectangle ++(", xstep, ", ", yhcoord, "); ", sep="", end="")
+        print("\\fill[red] (", xhcoord, ", 0) rectangle ++(", xstep, ", ", yhcoord, "); ", sep="", end="")
+    print("\n\\end{tikzpicture}\n")
 
 
 def main():
@@ -128,7 +130,7 @@ def main():
 
     compressneighbors()
 
-    print("\\draw (0,4) -- (12,4) (12,3) -- (0,3) (12,0) -- (0,0)", end=" ")
+    ydstring = "\n\\begin{tikzpicture}\n\\draw (0,4) -- (12,4) (12,3) -- (0,3) (12,0) -- (0,0)"
 
     # make sure the system does not change AND stays in this state for long enough
     while steps < totalsteps:
@@ -155,12 +157,16 @@ def main():
         xcoord = 12 / totalsteps * steps
         ycoord = 4 * yielddose
 
-        print("-- (", xcoord, " cm, ", ycoord, " cm) ", sep="", end="")
+        ydstring += "-- (%f, %f) " % (xcoord, ycoord)
+
+        if steps % (totalsteps//5) == 0:
+            histogram(players, 283)
 
         steps += 1
 
-    print(";")
-    histogram(players, 283)
+    ydstring += ";\n\\end{tikzpicture}\n"
+
+    print(ydstring)
     print("")
 
 
