@@ -20,12 +20,7 @@ players = [random.random() for q in range(networksize)]
 
 # Check that the elements of a given array are distinct
 def aredistinct(x: np.ndarray) -> bool:
-    f = True
-    for p in range(len(x)):
-        for q in range(p + 1, len(x)):
-            if x[p] == x[q]:
-                f = False
-    return f
+    return len(set(x)) == len(x)
 
 
 # Sample an array index, where array elements are probabilities
