@@ -131,3 +131,10 @@ dmypy.json
 #local pycharm files
 python/.idea/*
 python/venv/*
+
+*.aux
+*.nav
+*.out
+*.snm
+*.synctex*
+*.toc

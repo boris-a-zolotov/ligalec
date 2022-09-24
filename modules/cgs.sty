@@ -1,0 +1,114 @@
+\RequirePackage{amsmath,amssymb,mathtools}
+\RequirePackage{xcolor,graphicx,caption,subcaption,makecell}
+\RequirePackage{hyperref,natbib,alphalph}
+\RequirePackage{algorithm,algpseudocode}
+\RequirePackage{algorithmicx}
+\RequirePackage{import,xifthen,pdfpages,transparent}
+
+\RequirePackage{tikz}
+\RequirePackage[linguistics]{forest}
+\usetikzlibrary{patterns,calc,positioning,
+     decorations.pathmorphing,decorations.pathreplacing,
+     angles,quotes,intersections,arrows,arrows.meta,
+     backgrounds}
+
+\tikzset{>={To[width=1.6mm,length=1.8mm]}}
+
+% \RequirePackage[utf8x]{inputenc}
+\RequirePackage[russian]{babel}
+
+\RequirePackage{amsthm} \DeclarePairedDelimiter\lr{(}{)}
+\DeclareMathOperator{\sign}{sign}
+
+\newcommand{\bn}{\mathbb{N}}
+\newcommand{\br}{\mathbb{R}}
+
+
+%════════════════════
+
+
+\theoremstyle{plain}
+\newtheorem{thm}{Теорема}
+\newtheorem{lm}[theorem]{Лемма}
+
+\theoremstyle{definition}
+\newtheorem{defn}{Определение}
+\newtheorem{task}{Задача}
+
+
+%════════════════════
+
+
+\definecolor{dgray}{RGB}{15,15,15}
+
+\usetheme[progressbar=frametitle]{metropolis}
+
+\makeatletter
+\setlength{\metropolis@frametitle@padding}{1.8ex}
+\makeatother
+
+\linespread{1.26} \parskip=3mm
+\fontdimen2\font=1.4142mm
+
+\setbeamercolor{background canvas}{bg=dgray}
+\setbeamercolor{normal text}{fg=white}
+\setbeamercolor{alerted text}{fg=red!55!white} % \alert
+
+\setbeamercolor{progress bar}{fg=white!75!dgray,bg=white!40!dgray} 
+\setbeamercolor{progress bar in head}{fg=white!75!dgray,bg=white!40!dgray} 
+\setbeamercolor{progress bar in section page}{fg=white!75!dgray,bg=white!40!dgray}
+\setbeamercolor{title separator}{fg=dgray,bg=dgray}
+
+\setbeamercolor{subsection in head/foot}{bg=dgray,fg=white}
+\setbeamercolor{frametitle}{bg=white!8!dgray,fg=white}
+\setbeamerfont{frametitle}{size=\Large, series=\mdseries}
+
+\setbeamercolor{block title}{bg=white!27!dgray,fg=white}
+\setbeamercolor{block body}{bg=white!10!dgray}
+
+
+%════════════════════
+
+
+\definecolor{parabred}{HTML}{f55a62}
+\definecolor{parablue}{HTML}{5064eb}
+
+\definecolor{fill1}{RGB}{250,156,94}		% оранжевый
+\definecolor{fill2}{RGB}{247,253,86}		% жёлтый
+\definecolor{fill3}{RGB}{135,246,121}		% зелёный
+\definecolor{fill4}{RGB}{161,248,239}		% голубой
+\definecolor{fill5}{RGB}{198,142,245}		% фиолетовый
+\definecolor{fill6}{RGB}{185,168,139}		% коричневый
+
+\definecolor{hr}{RGB}{85,85,85}
+\definecolor{thr}{RGB}{200,200,200}
+\definecolor{edHr}{RGB}{190,20,50}
+\definecolor{edThr}{RGB}{230,110,130}
+
+\definecolor{p9260u}{RGB}{255,225,222}		% светло-розовый
+\definecolor{p9480u}{RGB}{188,236,240}		% голубой
+\definecolor{p9584u}{RGB}{220,206,202}		% тёмно-розовый
+\definecolor{p9121u}{RGB}{250,245,183}		% жёлтый
+
+\def\zal#1{\filldraw[draw=fill#1 , fill=fill#1 , opacity=0.55]}
+\def\zall#1{\filldraw[draw=fill#1 , fill=fill#1 , fill opacity=0.55 , draw opacity=0]}
+
+
+%════════════════════
+
+
+\title{Вычислительная геометрия, день 2}
+\date{\today}
+\author{Борис Золотов}
+\institute{«Лига Лекторов», 3 сезон}
+
+\setcounter{tocdepth}{1}
+
+\makeatletter
+\patchcmd{\beamer@sectionintoc}
+  {\vfill}
+  {\vskip -0.1 cm}
+  {}
+  {}
+\makeatother
+  
