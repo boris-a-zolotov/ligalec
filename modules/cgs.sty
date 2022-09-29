@@ -116,4 +116,28 @@
   {}
   {}
 \makeatother
+
+
+%════════════════════
+% Game theory presentation
+
+
+\definecolor{failpos}{RGB}{230,30,20}
+\definecolor{initpos}{RGB}{30,20,220}
+\definecolor{turna}{RGB}{100,240,110}
+\definecolor{turnb}{RGB}{250,140,110}
+
+\newcommand{\vseper}{\vphantom{$\int_{0_0}^{0^0}$}}
+
+\newcommand{\singlepayoff}[2]{\tikz{
+	\draw (0,0) node{\vseper #1}; \draw (0.8,0.8) node{\vseper #2};
+}}
+
+\newcommand{\rowdescription}[1]{\tikz{
+	\draw (0,0) node{\vseper #1}; \draw (0,0.8) node{\vseper};
+}}
+
+\newcommand{\coldescription}[1]{\tikz{
+	\draw (0,0) node{\vseper}; \draw (0.8,0) node{\vseper #1};
+}}
   
