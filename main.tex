@@ -8,12 +8,44 @@
 	\tableofcontents
 \end{frame}
 
-\section{Работающий пример}
+\section{Битва в море Бисмарка}
 
-\subsection{Сэмпл подсекция}
+\begin{frame} \ft{Битва в море Бисмарка}
+Sample text.~{\scriptsize\cite{petersGT}}
+\end{frame}
 
-\begin{frame} \ft{Сэмпл слайд}
-	Скороговорка
+\begin{frame} \ft{Запись игры с помощью таблицы}
+Кенни выбирает строку таблицы, Имамура выбирает\\
+столбец. Их выигрыши записаны в соотв. клетках\\
+таблицы напротив их выбора. 
+\begin{center}
+\begin{tabular}{|c|c|c|} \hline
+	& \coldescription{Север} & \coldescription{Юг} \\ \hline
+	\rowdescription{С} &
+		\singlepayoff{$2$}{$-2$} &
+		\singlepayoff{$2.5$}{$-2.5$} \\ \hline
+	\rowdescription{Ю} &
+		\singlepayoff{$1.5$}{$-1.5$} &
+		\singlepayoff{$3$}{$-3$} \\ \hline
+\end{tabular}
+\end{center}
+\end{frame}
+
+\begin{frame} \ft{Доминирующая стратегия}
+При любом действии Кенни Имамуре выгоднее\\
+выбирать север: соответствующие числа\\
+в строчках\ \ \(-2 > -2.5\),\ \ \(-1.5 > -3\).
+\begin{center}
+\begin{tabular}{|c|c|c|} \hline
+	& \coldescription{Север} & \coldescription{Юг} \\ \hline
+	\rowdescription{С} &
+		\singlepayoff{$2$}{\textcolor{fill1}{\boldmath$-2$}} &
+		\singlepayoff{$2.5$}{\textcolor{fill1}{\boldmath$-2.5$}} \\ \hline
+	\rowdescription{Ю} &
+		\singlepayoff{$1.5$}{\textcolor{fill3}{\boldmath$-1.5$}} &
+		\singlepayoff{$3$}{\textcolor{fill3}{\boldmath$-3$}} \\ \hline
+\end{tabular}
+\end{center}
 \end{frame}
 
 \begin{frame} \ft{Пример игры}
