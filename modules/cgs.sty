@@ -147,3 +147,12 @@
 	\draw (-2.5,5) node{#1} (-6,2) node[rotate=90]{#1}
 		(2.5,5) node{#2} (-6,-2) node[rotate=90]{#2};
 }
+
+\newcommand{\obvod}[8]{
+	\draw[rounded corners=0.25cm,#5]
+		(#1-1.25,#2-0.75) rectangle
+		(#3+1.25,#4+0.75);
+	\draw[opacity=0]
+		(#1,#2) -- (#3,#4)
+		node[opacity=1,pos=#6,#5,rotate=#7]{\(#8\)};
+}
