@@ -127,17 +127,23 @@
 \definecolor{turna}{RGB}{100,240,110}
 \definecolor{turnb}{RGB}{250,140,110}
 
-\newcommand{\vseper}{\vphantom{$\int_{0_0}^{0^0}$}}
 
-\newcommand{\singlepayoff}[2]{\tikz{
-	\draw (0,0) node{\vseper #1}; \draw (0.8,0.8) node{\vseper #2};
-}}
+\newcommand{\gameLines}{
+	\draw (-7,0) -- (5,0) (-7,4) -- (5,4) (0,6) -- (0,-4) (-5,6) -- (-5,-4);
+}
 
-\newcommand{\rowdescription}[1]{\tikz{
-	\draw (0,0) node{\vseper #1}; \draw (0,0.8) node{\vseper};
-}}
+\newcommand{\gameNames}[2]{
+	\draw (0,7) node{#2} (-8,0) node[rotate=90]{#1};
+}
 
-\newcommand{\coldescription}[1]{\tikz{
-	\draw (0,0) node{\vseper}; \draw (0.8,0) node{\vseper #1};
-}}
-  
+\newcommand{\gamePayoffs}[8]{
+	\draw (-3.5,1) node{\(#1\)} (-1.5,3) node{\(#2\)}
+		(1.5,1) node{\(#3\)} (3.5,3) node{\(#4\)}
+		(-3.5,-3) node{\(#5\)} (-1.5,-1) node{\(#6\)}
+		(1.5,-3) node{\(#7\)} (3.5,-1) node{\(#8\)};
+}
+
+\newcommand{\gameActions}[2]{
+	\draw (-2.5,5) node{#1} (-6,2) node[rotate=90]{#1}
+		(2.5,5) node{#2} (-6,-2) node[rotate=90]{#2};
+}
