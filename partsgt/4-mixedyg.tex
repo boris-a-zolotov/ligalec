@@ -43,8 +43,8 @@
   \draw (0,-0.05) node[below,fill=dgray,
         inner sep=0.3ex,text height=2.2ex]{$0$};
 
-\draw[very thick,fill1] (0,1) -- (0.8,1) -- (0.8,0) -- (1,0);
-\draw[very thick,fill3] (1,0) -- (1,0.8) -- (0,0.8) -- (0,1);
+\draw[very thick,fill1,line cap=round] (0,1) -- (0.8,1) -- (0.8,0) -- (1,0);
+\draw[very thick,fill3,line cap=round] (1,0) -- (1,0.8) -- (0,0.8) -- (0,1);
 
 \foreach \x / \y in {0 / 1, 0.8 / 0.8, 1 / 0} {
    \fill[PaleVioletRed,fill opacity=0.85] (\x , \y) circle[radius=0.4mm];}
