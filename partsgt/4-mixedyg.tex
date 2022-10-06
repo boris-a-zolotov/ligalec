@@ -1,0 +1,266 @@
+\documentclass[11pt,aspectratio=43,svgnames]{beamer}
+
+\usepackage{modules/cgs}
+
+\begin{document} \maketitle
+
+\begin{frame} \ft{Содержание}
+	\tableofcontents
+\end{frame}
+
+\section{Битва в море Бисмарка}
+
+\begin{frame} \ft{Битва в море Бисмарка}
+	Генерал Имамура может послать конвой\\
+	северным маршрутом (2 дня) или\\
+	южным маршрутом (3 дня).
+	\medskip
+
+	Генерал Кенни хочет бомбить конвой;\\
+	если он отправит свои самолёты {\it не туда,}\\
+	у него будет на это полдня меньше.\quad{\scriptsize\cite{petersGT}}
+\end{frame}
+
+\newcommand{\bismarckPO}{\gamePayoffs{2}{-2}{2.5}{-2.5}{1.5}{-1.5}{3}{-3}}
+
+\begin{frame} \ft{Запись игры с помощью таблицы}
+Кенни выбирает строку таблицы, Имамура выбирает\\
+столбец. Их выигрыши записаны в соотв. клетках\\
+таблицы напротив их выбора.
+\begin{center} \begin{tikzpicture}[scale=0.44]
+	\gameLines
+	\gameNames{Кенни}{Имамура}
+	\gameActions{Север}{Юг}
+	\bismarckPO	
+\end{tikzpicture} \end{center}
+\end{frame}
+
+\begin{frame} \ft{Доминирующая стратегия}
+При любом действии Кенни Имамуре выгоднее\\
+выбирать север (см. строчки).\\
+У Имамуры есть домин.\:стратегия, у Кенни нет.
+\begin{center} \begin{tikzpicture}[scale=0.44]
+	\gameLines
+	\gameNames{Кенни}{Имамура}
+	\gameActions{Север}{Юг}
+	\bismarckPO
+	\obvod{-1.5}{3}{3.5}{3}{fill1}{0.5}{0}{\geqslant}
+	\obvod{-1.5}{-1}{3.5}{-1}{fill1}{0.5}{0}{\geqslant}
+\end{tikzpicture} \end{center}
+\end{frame}
+
+\begin{frame} \ft{Равновесие Нэша}
+Зная это, Кенни тоже выберет север. Позиция\\
+\(\lr*{\text{Север},\text{Север}}\)~— {\it равновесие Нэша}: действие \\
+каждого~— лучший ответ на действие другого.
+\begin{center} \begin{tikzpicture}[scale=0.44]
+	\fill[p9480u,opacity=0.3] (0,0) rectangle (-5,4);
+	\gameLines
+	\gameNames{Кенни}{Имамура}
+	\gameActions{Север}{Юг}
+	\bismarckPO
+	\obvod{-1.5}{3}{3.5}{3}{fill1}{0.5}{0}{\geqslant}
+	\obvod{-3.5}{-3}{-3.5}{1}{fill3}{0.5}{-90}{\geqslant}
+\end{tikzpicture} \end{center}
+\end{frame}
+
+\begin{frame} \ft{Равновесие Нэша}
+	Равновесие Нэша~— это {\it устойчивое состояние\\
+	общества,} такой закон, который никто\\
+	не будет хотеть нарушить даже при\\
+	отсутствии какого-либо контроля.
+\end{frame}
+
+\section{Золотые шары (дилемма заключённого)}
+
+\begin{frame} \ft{Что такое дилемма заключённого?}
+	Известная игра, где равновесие Нэша\\
+	находится не в позиции, которая\\
+	кажется предпочтительной\\
+	для обоих игроков.\quad{\scriptsize\cite{petersGT,mszGT}}
+	\medskip
+
+	Адаптирована в качестве телешоу\\
+	«Золотые шары» на британском\\
+	канале {\it ITV.}\quad{\scriptsize\cite{zurichGB}}
+\end{frame}
+
+\newcommand{\gbPO}{\gamePayoffs{5}{5}{0}{10}{10}{0}{0}{0}}
+
+\begin{frame} \ft{Таблица выигрышей для «З.~Ш.»}
+	Оба делятся~— выигрыш делится поровну.\\
+	Один делится~— всё забирает другой.\\
+	Оба хотят забрать~— остаются ни с чем.
+\begin{center} \begin{tikzpicture}[scale=0.44]
+	\gameLines
+	\gameNames{Игрок 1}{Игрок 2}
+	\gameActions{Делить}{Забрать}
+	\gbPO
+\end{tikzpicture} \end{center}
+\end{frame}
+
+\begin{frame} \ft{Что тут происходит?}
+	У обоих игроков есть доминирующая\\
+	стратегия: забирать деньги.\\
+	Она всегда даёт не меньший выигрыш.
+\begin{center} \begin{tikzpicture}[scale=0.44]
+	\gameLines
+	\gameNames{Игрок 1}{Игрок 2}
+	\gameActions{Делить}{Забрать}
+	\gbPO
+	\obvod{-1.5}{3}{3.5}{3}{fill1}{0.5}{0}{\leqslant}
+	\obvod{-1.5}{-1}{3.5}{-1}{fill1}{0.5}{0}{\leqslant}
+\end{tikzpicture} \end{center}
+\end{frame}
+
+\begin{frame} \ft{Равновесие Нэша}
+	В этой игре три равновесия Нэша,\\
+	но ни одно из них~— не\\
+	\(\lr*{\text{Делить},\text{Делить}}\).
+\begin{center} \begin{tikzpicture}[scale=0.44]
+	\fill[p9480u,opacity=0.3] (0,0) rectangle (5,-4)
+		(0,0) rectangle (5,4) (0,0) rectangle (-5,-4);
+	\gameLines
+	\gameNames{Игрок 1}{Игрок 2}
+	\gameActions{Делить}{Забрать}
+	\gbPO
+	\obvod{-1.5}{-1}{3.5}{-1}{fill1}{0.44}{0}{=}
+	\obvod{-1.5}{3}{3.5}{3}{fill1}{0.44}{0}{\leqslant}
+	\obvod{1.5}{-3}{1.5}{1}{fill3}{0.44}{-90}{=}
+	\obvod{-3.5}{-3}{-3.5}{1}{fill3}{0.44}{-90}{\leqslant}
+\end{tikzpicture} \end{center}
+\end{frame}
+
+\begin{frame} \ft{Парето-оптимум}
+	Участники пытаются разработать такую\\
+	систему контроля, которая бы заставила их\\
+	гарантированно находиться в позиции,\\
+	оптимальной по Парето:
+	\medskip
+	
+	Нельзя улучшить чей-либо выигрыш,\\
+	не ухудшив суммарного выигрыша и\\
+	справедливости его распределения.
+\end{frame}
+
+\section{Уступить или проехать (Ястребы и голуби)}
+
+\newcommand{\yieldPO}{\gamePayoffs{-1}{-1}{1}{2}{2}{1}{-11}{-11}}
+
+\begin{frame} \ft{Уступить или проехать: выигрыши}
+	Оба уступают~— заминка на одном месте\\
+	Один уступает~— оба счастливы\\
+	Оба едут~— попадают в ДТП
+\begin{center} \begin{tikzpicture}[scale=0.44]
+	\gameLines
+	\gameNames{Игрок 1}{Игрок 2}
+	\gameActions{Уступить}{Ехать}
+	\yieldPO
+\end{tikzpicture} \end{center}
+\end{frame}
+
+\begin{frame} \ft{Доминирующая стратегия}
+	Ни у одного из игроков нет\\
+	доминирующей стратегии. (Игра симметрична,\\
+	поэтому покажем только для первого.)
+\begin{center} \begin{tikzpicture}[scale=0.44]
+	\gameLines
+	\gameNames{Игрок 1}{Игрок 2}
+	\gameActions{Уступить}{Ехать}
+	\yieldPO
+	\obvod{-1.5}{3}{3.5}{3}{fill1}{0.5}{0}{\leqslant}
+	\obvod{-1.5}{-1}{3.5}{-1}{fill1}{0.5}{0}{\geqslant}
+\end{tikzpicture} \end{center}
+\end{frame}
+
+\begin{frame} \ft{Два равновесия Нэша и светофор}
+	Есть два симметричных равновесия Нэша,\\
+	от которых игрокам невыгодно отступать,\\
+	если им указать, в какой они играют.
+\begin{center} \begin{tikzpicture}[scale=0.44]
+	\fill[p9480u,opacity=0.3] (0,0) rectangle (5,4)
+		(0,0) rectangle (-5,-4);
+	\gameLines
+	\gameNames{Игрок 1}{Игрок 2}
+	\gameActions{Уступить}{Ехать}
+	\yieldPO
+	\obvod{-1.5}{3}{3.5}{3}{fill1}{0.5}{0}{\leqslant}
+	\obvod{1.5}{-3}{1.5}{1}{fill3}{0.5}{90}{\leqslant}
+\end{tikzpicture} \end{center}
+\end{frame}
+
+\begin{frame} \ft{Два равновесия Нэша и светофор}
+	Прибор, который это указывает, \\
+	называется {\it светофор.} Но предлагается\\
+	поискать равновесие ещё кое-где.
+\begin{center} \begin{tikzpicture}[scale=0.44]
+	\fill[p9480u,opacity=0.3] (0,0) rectangle (5,4)
+		(0,0) rectangle (-5,-4);
+	\gameLines
+	\gameNames{Игрок 1}{Игрок 2}
+	\gameActions{Уступить}{Ехать}
+	\yieldPO
+	\obvod{-1.5}{-1}{3.5}{-1}{fill1}{0.5}{0}{\geqslant}
+	\obvod{-3.5}{-3}{-3.5}{1}{fill3}{0.5}{-90}{\leqslant}
+\end{tikzpicture} \end{center}
+\end{frame}
+
+\section{Смешанные стратегии}
+
+\begin{frame} \ft{Суть смешанных стратегий}
+	Пусть {\it абстрактный коллективный} первый игрок\\
+	уступает с вероятностью \(p\), а второй~— с вероятностью \(q\).\medskip
+
+	Равновесие Нэша~— позиция, когда действие каждого\\
+	игрока~— {\it лучший ответ} на действие другого.\medskip
+
+	Найдём, какая \(q\) будет лучшим ответом\\
+	в зависимости от \(p\).
+\end{frame}
+
+\begin{frame} \ft{Ожидаемый выигрыш второго игрока}
+   \vphantom{t}\centerline{
+	\(-1\cdot pq +2\cdot p\lr*{1-q} +1\cdot \lr*{1-p}q -11\cdot \lr*{1-p}\lr*{1-q} =\)} \\
+   \vphantom{t}\centerline{
+	\(= \lr*{12 - 15 p} \cdot q + 13 p - 11\)}\\
+	Лучшая \(q\)~— либо 0, либо 1, либо {\it все возможные.}
+\begin{center} \begin{tikzpicture}[scale=0.44]
+	\gameLines
+	\gameNames{Игрок 1}{Игрок 2}
+	\gameActions{Уступить}{Ехать}
+	\yieldPO
+\end{tikzpicture} \end{center}
+\end{frame}
+
+\begin{frame} \ft{{\it Три} равновесия Нэша}
+	\( p < \frac45 \), тогда \(q=1\)\\
+	\( p = \frac45 \), тогда \(q\) любое, выигрыш от него не зависит\\
+	\( p < \frac45 \), тогда \(q=0\)
+\begin{center} \begin{tikzpicture}[scale=3.35]
+\draw[thick,->] (-0.2,0) -- (1.2,0) node[below]{\(p\)};
+\draw[thick,->] (0,-0.2) -- (0,1.2) node[left]{\(q\)};
+
+\foreach \t / \ttext in {1, 0.5 / \frac12, 0.8 / \frac45} {
+  \draw (\t,0.05) -- (\t,-0.05) node[below,fill=dgray,
+        inner sep=0.3ex,text height=2.2ex]{$\ttext$};
+  \draw (0.05,\t) -- (-0.05,\t) node[left, fill=dgray,
+        inner sep=0.3ex,text height=2.2ex]{$\ttext$};}
+  \draw (0,-0.05) node[below,fill=dgray,
+        inner sep=0.3ex,text height=2.2ex]{$0$};
+
+\draw[very thick,fill1] (0,1) -- (0.8,1) -- (0.8,0) -- (1,0);
+\draw[very thick,fill3] (1,0) -- (1,0.8) -- (0,0.8) -- (0,1);
+
+\foreach \x / \y in {0 / 1, 0.8 / 0.8, 1 / 0} {
+   \fill[PaleVioletRed,fill opacity=0.85] (\x , \y) circle[radius=0.4mm];}
+\end{tikzpicture} \end{center}
+\end{frame}
+
+\section{Эволюционная теория игр}
+
+\begin{frame} \scriptsize
+	\bibliography{lile}
+	\bibliographystyle{apalike}
+\end{frame}
+
+\end{document}
