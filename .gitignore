@@ -132,6 +132,8 @@ dmypy.json
 python/.idea/*
 python/venv/*
 
+shotcut/*
+
 *.aux
 *.bak
 *.nav
