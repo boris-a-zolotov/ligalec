@@ -1,0 +1,48 @@
+\documentclass[11pt,aspectratio=169,svgnames]{beamer}
+
+\usefonttheme{professionalfonts}
+
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{xcolor,graphicx,tikz}
+\usepackage[russian]{babel}
+
+\definecolor{dgray}{RGB}{15,15,15}
+
+\usebackgroundtemplate{%
+	\includegraphics[width=\paperwidth,height=\paperheight]{img/lile-back-dgray}%
+}
+
+\setbeamersize{text margin left=12mm,text margin right=12mm}
+\addtolength{\headsep}{0.55cm} \addtolength{\footskip}{0.55cm}
+\setbeamertemplate{frametitle}[default][left,leftskip=0.85cm]
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{blocks}[rounded]
+
+\setbeamercolor{titlelike}{fg=white}
+\setbeamercolor{normal text}{fg=white}
+\setbeamercolor{block title}{bg=white!27!dgray,fg=white}
+\setbeamercolor{block body}{bg=white!10!dgray}
+
+\input{modules/mspec}
+
+\newenvironment{nblock}[1]{
+	\begin{center} \begin{columns}[t] \begin{column}{110mm} \begin{block}{#1}
+   }{
+	\end{block} \end{column} \end{columns} \end{center}
+}
+
+   \title{О свёртке и её применениях}
+   \date{\today}
+   \author{Золотов Борис Алексеевич, аспирант МКН СПбГУ}
+   \institute{«Лига Лекторов», 3 сезон}
+
+\begin{document} \maketitle
+
+\begin{frame} \frametitle{Sample Text}
+	Yyyyy terrifying \(3y^2+7=5\).
+
+\begin{nblock}{\vspace*{-3ex}}
+Кен Блок \end{nblock}
+\end{frame}
+
+\end{document}
