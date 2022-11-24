@@ -53,7 +53,6 @@ kernel = unitalize(kernel)
 
 wavg = scp.signal.fftconvolve(days, kernel)
 
-
 outarray = [[0, days[6:], dplot, 'Заболеваемость: сырые данные'],
             [1, wavg[6:-6], '#ebaf9b', 'Заболеваемость: недельное среднее'],
             [2, samp[6:], '#73f587', 'Недельное среднее и тренд']]
