@@ -1,6 +1,7 @@
 import numpy as np
 import scipy as scp
 import math
+import random
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
@@ -12,7 +13,7 @@ tplot = '#385057'
 def setaxes(a, ttl, xl, yl):
     a.set(xlabel=xl, ylabel=yl, facecolor=dgray)  # заголовок, подписи осей, цвет внутри рамок
     a.set_title(ttl, color='w')
-    a.set_ylim(bottom=0, top=5.95)  # фиксированные пределы по оси y
+    # a.set_ylim(bottom=0, top=10)  пределов по оси y на этот раз нет
 
     a.spines['bottom'].set_color(dgray)  # цвета рамок графика
     a.spines['left'].set_color(dgray)
@@ -20,9 +21,9 @@ def setaxes(a, ttl, xl, yl):
     a.spines['top'].set_color(dgray)
 
     a.xaxis.label.set_color('white')  # цвета штрихов на осях и подписей
-    a.yaxis.label.set_color('white')
+    a.yaxis.label.set_color(dgray)
     a.tick_params(axis='x', colors='white')
-    a.tick_params(axis='y', colors='white')
+    a.tick_params(axis='y', colors=dgray)
 
 
 def unitalize(arr: np.ndarray) -> np.ndarray:  # сделать массив с суммой эл-тов = 1
@@ -46,9 +47,6 @@ dx = 1 / 250  # вес одного элемента массива
 
 func = np.zeros(2 * sampleSemilength - 1, dtype=float)
 
-for i in range(2 * sampleSemilength - 1):
-    func[i] = i % 300
-
 
 def normalkernel(s: float) -> np.ndarray:
     kernl = np.zeros(2 * kernelSemilength - 1, dtype=float)
@@ -59,42 +57,43 @@ def normalkernel(s: float) -> np.ndarray:
     return kernl
 
 
-kernel = normalkernel(0.2)
-
 lbls = range(2 * sampleSemilength - 1)
 lbls = [(x - sampleSemilength + 1) * dx for x in lbls]
 
-lblsKern = range(2 * kernelSemilength - 1)
-lblsKern = [(x - kernelSemilength + 1) * dx for x in lblsKern]
+for i in range(2 * sampleSemilength - 1):
+    if i % 300 == 0:
+        a = random.uniform(-4, 4)
+        b = random.uniform(-12, 12)
+        c = random.uniform(-200, 200)
+        d = random.uniform(-720, 720)
+    vx = lbls[i]
+    func[i] = a * (vx ** 3) + b * (vx ** 2) + c * vx + d
 
-# plt.plot(lblsKern, kernel)
+figure = plt.figure(facecolor=dgray, figsize=(8.2, 4.1))
+axes = figure.subplots()
 
-# plt.show()
+axes.plot(lbls, func, color=dplot)
 
-# plotnumber = 0  # для нумерации файлов
+setaxes(axes, "Очень негладкая функция", ' ', ' ')
 
-# outarray = [[0, copyfc(func), 1]]
+pdf = PdfPages("smoothing-0.pdf")
+pdf.savefig(figure)
+pdf.close()
 
+for sigma in [2, 1, 0.5, 0.2, 0.05]:
+    figure = plt.figure(facecolor=dgray, figsize=(8.2, 4.1))
+    axes = figure.subplots()
 
-rest = scp.signal.fftconvolve(func, kernel) * dx
-rest = rest[kernelSemilength - 1:-1 * kernelSemilength + 1]
+    kernel = normalkernel(sigma)
 
-plt.plot(lbls, func)
-plt.plot(lbls, rest)
+    rest = scp.signal.fftconvolve(func, kernel) * dx
+    rest = rest[kernelSemilength - 1:-1 * kernelSemilength + 1]
 
-plt.show()
+    axes.plot(lbls, func, color=tplot)
+    axes.plot(lbls, rest, color=dplot)
 
-# for s in outarray:
-#     figure = plt.figure(facecolor=dgray, figsize=(8.2, 4.1))
-#     axes = figure.subplots()
-#
-#     for k in range(s[0]):
-#         axes.plot(lbls, outarray[k][1], color=tplot)
-#
-#     axes.plot(lbls, outarray[s[0]][1], color=dplot)
-#
-#     setaxes(axes, ("f^(*%d)" % (s[2])), ' ', ' ')
-#
-#     pdf = PdfPages("probability-%d.pdf" % (s[0]))
-#     pdf.savefig(figure)
-#     pdf.close()
+    setaxes(axes, ("σ = %.2f" % sigma), ' ', ' ')
+
+    pdf = PdfPages("smoothing-%.2f.pdf" % sigma)
+    pdf.savefig(figure)
+    pdf.close()
