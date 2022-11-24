@@ -1,5 +1,6 @@
 import numpy as np
 import scipy as scp
+import math
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
@@ -39,88 +40,61 @@ def copyfc(x: np.ndarray) -> np.ndarray:
 
 # Мы считаем длины образца и ядра нечётными, чтобы ноль был нулём
 
-sampleSemilength = 1600
+sampleSemilength = 2000
 kernelSemilength = 1000
-dx = 1 / 2000  # вес одного элемента массива
+dx = 1 / 250  # вес одного элемента массива
 
 func = np.zeros(2 * sampleSemilength - 1, dtype=float)
 
-for i in range(kernelSemilength):  # заполняем функцию.
-    # в этой задаче она такая же, как ядро,
-    # и симметричная
-    func[sampleSemilength - 1 - i] = 1
-    func[sampleSemilength - 1 + i] = 1
+for i in range(2 * sampleSemilength - 1):
+    func[i] = i % 300
 
-func = unitalize(func)
 
-kernel = np.full(2 * kernelSemilength - 1, 1, dtype=float)
-# ядро из единичек. когда-нибудь будет гауссианом
+def normalkernel(s: float) -> np.ndarray:
+    kernl = np.zeros(2 * kernelSemilength - 1, dtype=float)
+    for st in range(kernelSemilength):
+        kernl[kernelSemilength - 1 - st] = math.exp(-0.5 * (st * dx / s) ** 2)
+        kernl[kernelSemilength - 1 + st] = math.exp(-0.5 * (st * dx / s) ** 2)
+    kernl = unitalize(kernl)
+    return kernl
 
-kernel = unitalize(kernel)
+
+kernel = normalkernel(0.2)
 
 lbls = range(2 * sampleSemilength - 1)
 lbls = [(x - sampleSemilength + 1) * dx for x in lbls]
-# вот такой вот правильный сдвиг, чтобы
-# подписи в легенде соответствовали моему мнению об оси,
-# а не индексу в массиве
 
-plotnumber = 0  # для нумерации файлов
+lblsKern = range(2 * kernelSemilength - 1)
+lblsKern = [(x - kernelSemilength + 1) * dx for x in lblsKern]
 
-outarray = [[0, copyfc(func), 1]]
-# вот эту вот инопланетную мразь надо брутально копировать,
-# чтобы func не изменялся, будучи уже положен в массив
+# plt.plot(lblsKern, kernel)
 
-for i in [t + 1 for t in range(15)]:
-    # (x+x+…+x)/(n+1) = (x+…+x)/n * n/(n+1) + x/(n+1)
-    # соответственно, надо немного ужать распределение среднего n величин
-    # и так же ужать ядро
+# plt.show()
 
-    st = 1
-    while (i + 1) * st / i <= sampleSemilength - 1:
-        k = (i + 1) * st // i
-        func[sampleSemilength - 1 + st] = func[sampleSemilength - 1 + k]
-        func[sampleSemilength - 1 - st] = func[sampleSemilength - 1 - k]
-        st += 1
+# plotnumber = 0  # для нумерации файлов
 
-    while st <= sampleSemilength - 1:
-        func[sampleSemilength - 1 + st] = 0
-        func[sampleSemilength - 1 - st] = 0
-        st += 1
-    func = unitalize(func)
+# outarray = [[0, copyfc(func), 1]]
 
-    st = 1
-    while (i + 1) * st / i <= kernelSemilength - 1:
-        k = (i + 1) * st // i
-        kernel[kernelSemilength - 1 + st] = kernel[kernelSemilength - 1 + k]
-        kernel[kernelSemilength - 1 - st] = kernel[kernelSemilength - 1 - k]
-        st += 1
-    while st <= kernelSemilength - 1:
-        kernel[kernelSemilength - 1 + st] = 0
-        kernel[kernelSemilength - 1 - st] = 0
-        st += 1
-    kernel = unitalize(kernel)
 
-    func = scp.signal.fftconvolve(func, kernel) * dx
-    # кажется реально нужно один раз на dx умножать, удивительно
-    func = func[kernelSemilength - 1:-1 * kernelSemilength + 1]
-    # правильная обрезка, оставляющая массив той же длины,
-    # найдена магическим образом
+rest = scp.signal.fftconvolve(func, kernel) * dx
+rest = rest[kernelSemilength - 1:-1 * kernelSemilength + 1]
 
-    if (i % 3 == 0):
-        plotnumber += 1
-        outarray += [[plotnumber, copyfc(func), i]]  # копирование!
+plt.plot(lbls, func)
+plt.plot(lbls, rest)
 
-for s in outarray:
-    figure = plt.figure(facecolor=dgray, figsize=(8.2, 4.1))
-    axes = figure.subplots()
+plt.show()
 
-    for k in range(s[0]):
-        axes.plot(lbls, outarray[k][1], color=tplot)
-
-    axes.plot(lbls, outarray[s[0]][1], color=dplot)
-
-    setaxes(axes, ("f^(*%d)" % (s[2])), ' ', ' ')
-
-    pdf = PdfPages("probability-%d.pdf" % (s[0]))
-    pdf.savefig(figure)
-    pdf.close()
+# for s in outarray:
+#     figure = plt.figure(facecolor=dgray, figsize=(8.2, 4.1))
+#     axes = figure.subplots()
+#
+#     for k in range(s[0]):
+#         axes.plot(lbls, outarray[k][1], color=tplot)
+#
+#     axes.plot(lbls, outarray[s[0]][1], color=dplot)
+#
+#     setaxes(axes, ("f^(*%d)" % (s[2])), ' ', ' ')
+#
+#     pdf = PdfPages("probability-%d.pdf" % (s[0]))
+#     pdf.savefig(figure)
+#     pdf.close()
