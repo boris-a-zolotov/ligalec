@@ -28,9 +28,9 @@ def unitalize(arr: np.ndarray) -> np.ndarray:  # сделать массив с 
     return arr / npsum / dx
 
 
-sampleSemilength = 900
-kernelSemilength = 100
-dx = 1 / 200  # вес одного элемента массива
+sampleSemilength = 3000
+kernelSemilength = 1000
+dx = 1 / 2000  # вес одного элемента массива
 
 func = np.zeros(2 * sampleSemilength - 1, dtype=float)
 
@@ -49,19 +49,35 @@ lbls = [(x - sampleSemilength + 1) * dx for x in lbls]
 
 plt.plot(lbls, func)
 
-func = scp.signal.fftconvolve(func, kernel) * dx
+for i in [t+1 for t in range(15)]:
+    st = 1
+    while ((i + 1) * st / i <= sampleSemilength - 1):
+        k = (i + 1) * st // i
+        func[sampleSemilength - 1 + st] = func[sampleSemilength - 1 + k]
+        func[sampleSemilength - 1 - st] = func[sampleSemilength - 1 - k]
+        st += 1
+    while (st <= sampleSemilength - 1):
+        func[sampleSemilength - 1 + st] = 0
+        func[sampleSemilength - 1 - st] = 0
+        st += 1
+    func = unitalize(func)
 
-func = func[kernelSemilength - 1:-1 * kernelSemilength + 1]
+    st = 1
+    while ((i + 1) * st / i <= kernelSemilength - 1):
+        k = (i + 1) * st // i
+        kernel[kernelSemilength - 1 + st] = kernel[kernelSemilength - 1 + k]
+        kernel[kernelSemilength - 1 - st] = kernel[kernelSemilength - 1 - k]
+        st += 1
+    while (st <= kernelSemilength - 1):
+        kernel[kernelSemilength - 1 + st] = 0
+        kernel[kernelSemilength - 1 - st] = 0
+        st += 1
+    kernel = unitalize(kernel)
 
-func = scp.signal.fftconvolve(func, kernel) * dx
-
-func = func[kernelSemilength - 1:-1 * kernelSemilength + 1]
-
-func = scp.signal.fftconvolve(func, kernel) * dx
-
-func = func[kernelSemilength - 1:-1 * kernelSemilength + 1]
-
-plt.plot(lbls, func)
+    func = scp.signal.fftconvolve(func, kernel) * dx
+    func = func[kernelSemilength - 1:-1 * kernelSemilength + 1]
+    if (i % 3 == 0):
+        plt.plot(lbls, func)
 
 plt.show()
 
