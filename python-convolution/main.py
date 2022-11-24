@@ -37,61 +37,78 @@ def copyfc(x: np.ndarray) -> np.ndarray:
     return retarray
 
 
+# Мы считаем длины образца и ядра нечётными, чтобы ноль был нулём
+
 sampleSemilength = 1600
 kernelSemilength = 1000
 dx = 1 / 2000  # вес одного элемента массива
 
 func = np.zeros(2 * sampleSemilength - 1, dtype=float)
 
-for i in range(kernelSemilength):
+for i in range(kernelSemilength):  # заполняем функцию.
+    # в этой задаче она такая же, как ядро,
+    # и симметричная
     func[sampleSemilength - 1 - i] = 1
     func[sampleSemilength - 1 + i] = 1
 
 func = unitalize(func)
 
 kernel = np.full(2 * kernelSemilength - 1, 1, dtype=float)
+# ядро из единичек. когда-нибудь будет гауссианом
 
 kernel = unitalize(kernel)
 
 lbls = range(2 * sampleSemilength - 1)
 lbls = [(x - sampleSemilength + 1) * dx for x in lbls]
+# вот такой вот правильный сдвиг, чтобы
+# подписи в легенде соответствовали моему мнению об оси,
+# а не индексу в массиве
 
-plotnumber = 0
+plotnumber = 0  # для нумерации файлов
 
 outarray = [[0, copyfc(func), 1]]
+# вот эту вот инопланетную мразь надо брутально копировать,
+# чтобы func не изменялся, будучи уже положен в массив
 
 for i in [t + 1 for t in range(15)]:
-    funcst = 1
+    # (x+x+…+x)/(n+1) = (x+…+x)/n * n/(n+1) + x/(n+1)
+    # соответственно, надо немного ужать распределение среднего n величин
+    # и так же ужать ядро
 
-    while ((i + 1) * funcst / i <= sampleSemilength - 1):
-        funck = (i + 1) * funcst // i
-        func[sampleSemilength - 1 + funcst] = func[sampleSemilength - 1 + funck]
-        func[sampleSemilength - 1 - funcst] = func[sampleSemilength - 1 - funck]
-        funcst += 1
+    st = 1
+    while (i + 1) * st / i <= sampleSemilength - 1:
+        k = (i + 1) * st // i
+        func[sampleSemilength - 1 + st] = func[sampleSemilength - 1 + k]
+        func[sampleSemilength - 1 - st] = func[sampleSemilength - 1 - k]
+        st += 1
 
-    while (funcst <= sampleSemilength - 1):
-        func[sampleSemilength - 1 + funcst] = 0
-        func[sampleSemilength - 1 - funcst] = 0
-        funcst += 1
+    while st <= sampleSemilength - 1:
+        func[sampleSemilength - 1 + st] = 0
+        func[sampleSemilength - 1 - st] = 0
+        st += 1
     func = unitalize(func)
 
     st = 1
-    while ((i + 1) * st / i <= kernelSemilength - 1):
+    while (i + 1) * st / i <= kernelSemilength - 1:
         k = (i + 1) * st // i
         kernel[kernelSemilength - 1 + st] = kernel[kernelSemilength - 1 + k]
         kernel[kernelSemilength - 1 - st] = kernel[kernelSemilength - 1 - k]
         st += 1
-    while (st <= kernelSemilength - 1):
+    while st <= kernelSemilength - 1:
         kernel[kernelSemilength - 1 + st] = 0
         kernel[kernelSemilength - 1 - st] = 0
         st += 1
     kernel = unitalize(kernel)
 
     func = scp.signal.fftconvolve(func, kernel) * dx
+    # кажется реально нужно один раз на dx умножать, удивительно
     func = func[kernelSemilength - 1:-1 * kernelSemilength + 1]
+    # правильная обрезка, оставляющая массив той же длины,
+    # найдена магическим образом
+
     if (i % 3 == 0):
         plotnumber += 1
-        outarray += [[plotnumber, copyfc(func), i]]
+        outarray += [[plotnumber, copyfc(func), i]]  # копирование!
 
 for s in outarray:
     figure = plt.figure(facecolor=dgray, figsize=(8.2, 4.1))
