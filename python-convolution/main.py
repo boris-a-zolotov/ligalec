@@ -5,6 +5,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 
 dgray = '#0f0f0f'  # цвета фона и графиков
 dplot = '#96e6ff'
+tplot = '#385057'
 
 
 def setaxes(a, ttl, xl, yl):
@@ -28,7 +29,7 @@ def unitalize(arr: np.ndarray) -> np.ndarray:  # сделать массив с 
     return arr / npsum / dx
 
 
-sampleSemilength = 3000
+sampleSemilength = 2000
 kernelSemilength = 1000
 dx = 1 / 2000  # вес одного элемента массива
 
@@ -47,19 +48,32 @@ kernel = unitalize(kernel)
 lbls = range(2 * sampleSemilength - 1)
 lbls = [(x - sampleSemilength + 1) * dx for x in lbls]
 
-plt.plot(lbls, func)
+plotnumber = 0
 
-for i in [t+1 for t in range(15)]:
-    st = 1
-    while ((i + 1) * st / i <= sampleSemilength - 1):
-        k = (i + 1) * st // i
-        func[sampleSemilength - 1 + st] = func[sampleSemilength - 1 + k]
-        func[sampleSemilength - 1 - st] = func[sampleSemilength - 1 - k]
-        st += 1
-    while (st <= sampleSemilength - 1):
-        func[sampleSemilength - 1 + st] = 0
-        func[sampleSemilength - 1 - st] = 0
-        st += 1
+
+def copyfc(x: np.ndarray) -> np.ndarray:
+    copylen = len(x)
+    retarray = np.zeros(copylen, dtype=float)
+    for cyci in range(copylen):
+        retarray[cyci] = x[cyci]
+    return retarray
+
+
+outarray = [[0, copyfc(func), 1]]
+
+for i in [t + 1 for t in range(15)]:
+    funcst = 1
+
+    while ((i + 1) * funcst / i <= sampleSemilength - 1):
+        funck = (i + 1) * funcst // i
+        func[sampleSemilength - 1 + funcst] = func[sampleSemilength - 1 + funck]
+        func[sampleSemilength - 1 - funcst] = func[sampleSemilength - 1 - funck]
+        funcst += 1
+
+    while (funcst <= sampleSemilength - 1):
+        func[sampleSemilength - 1 + funcst] = 0
+        func[sampleSemilength - 1 - funcst] = 0
+        funcst += 1
     func = unitalize(func)
 
     st = 1
@@ -77,28 +91,20 @@ for i in [t+1 for t in range(15)]:
     func = scp.signal.fftconvolve(func, kernel) * dx
     func = func[kernelSemilength - 1:-1 * kernelSemilength + 1]
     if (i % 3 == 0):
-        plt.plot(lbls, func)
+        plotnumber += 1
+        outarray += [[plotnumber, copyfc(func), i]]
 
-plt.show()
+for s in outarray:
+    figure = plt.figure(facecolor=dgray, figsize=(8.2, 4.1))
+    axes = figure.subplots()
 
-# print(lbls)
+    for k in range(s[0]):
+        axes.plot(lbls, outarray[k][1], color=tplot)
 
-# wavg = scp.signal.fftconvolve(days, kernel)
+    axes.plot(lbls, outarray[s[0]][1], color=dplot)
 
+    setaxes(axes, ("f^(*%d)" % (s[2])), ' ', ' ')
 
-# outarray = [[0, days[6:], dplot, 'Заболеваемость: сырые данные'],
-#             [1, wavg[6:-6], '#ebaf9b', 'Заболеваемость: недельное среднее'],
-#             [2, samp[6:], '#73f587', 'Недельное среднее и тренд']]
-#
-# for s in outarray:
-#     figure = plt.figure(facecolor=dgray, figsize=(8.2, 4.1))
-#     axes = figure.subplots()
-#
-#     for k in range(s[0] + 1):
-#         axes.plot(outarray[k][1], color=outarray[k][2])
-#
-#     setaxes(axes, s[3], 'дни', 'значения')
-#
-#     pdf = PdfPages("covid-%d.pdf" % (s[0]))
-#     pdf.savefig(figure)
-#     pdf.close()
+    pdf = PdfPages("probability-%d.pdf" % (s[0]))
+    pdf.savefig(figure)
+    pdf.close()
