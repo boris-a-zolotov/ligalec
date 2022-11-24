@@ -25,47 +25,64 @@ def setaxes(a, ttl, xl, yl):
 
 def unitalize(arr: np.ndarray) -> np.ndarray:  # сделать массив с суммой эл-тов = 1
     npsum = np.sum(arr)
-    return arr / npsum
+    return arr / npsum / dx
 
 
-pandDuration = 105
+sampleSemilength = 900
+kernelSemilength = 100
+dx = 1 / 200  # вес одного элемента массива
 
-days = np.zeros(pandDuration, dtype=float)
-samp = np.zeros(pandDuration, dtype=float)
+func = np.zeros(2 * sampleSemilength - 1, dtype=float)
 
-for x in range(pandDuration):
-    days[x] = 2500 + 1000 * np.arctan(0.08 * (x - 75))
-    samp[x] = 2500 + 1000 * np.arctan(0.08 * (x - 75))
+for i in range(kernelSemilength):
+    func[sampleSemilength - 1 - i] = 1
+    func[sampleSemilength - 1 + i] = 1
 
-for w in range(pandDuration // 7):
-    defic = days[7 * w + 2] - 400
-    days[7 * w + 2] = 400
-    days[7 * w + 3] += defic / 2
-    days[7 * w + 4] += defic * 0.4
-    days[7 * w + 5] += defic / 10
+func = unitalize(func)
 
-for x in range(pandDuration):
-    days[x] += max(np.random.normal(0, 400), -1 * days[x])
-
-kernel = np.full(7, 1, dtype=float)
+kernel = np.full(2 * kernelSemilength - 1, 1, dtype=float)
 
 kernel = unitalize(kernel)
 
-wavg = scp.signal.fftconvolve(days, kernel)
+lbls = range(2 * sampleSemilength - 1)
+lbls = [(x - sampleSemilength + 1) * dx for x in lbls]
 
-outarray = [[0, days[6:], dplot, 'Заболеваемость: сырые данные'],
-            [1, wavg[6:-6], '#ebaf9b', 'Заболеваемость: недельное среднее'],
-            [2, samp[6:], '#73f587', 'Недельное среднее и тренд']]
+plt.plot(lbls, func)
 
-for s in outarray:
-    figure = plt.figure(facecolor=dgray, figsize=(8.2, 4.1))
-    axes = figure.subplots()
+func = scp.signal.fftconvolve(func, kernel) * dx
 
-    for k in range(s[0] + 1):
-        axes.plot(outarray[k][1], color=outarray[k][2])
+func = func[kernelSemilength - 1:-1 * kernelSemilength + 1]
 
-    setaxes(axes, s[3], 'дни', 'значения')
+func = scp.signal.fftconvolve(func, kernel) * dx
 
-    pdf = PdfPages("covid-%d.pdf" % (s[0]))
-    pdf.savefig(figure)
-    pdf.close()
+func = func[kernelSemilength - 1:-1 * kernelSemilength + 1]
+
+func = scp.signal.fftconvolve(func, kernel) * dx
+
+func = func[kernelSemilength - 1:-1 * kernelSemilength + 1]
+
+plt.plot(lbls, func)
+
+plt.show()
+
+# print(lbls)
+
+# wavg = scp.signal.fftconvolve(days, kernel)
+
+
+# outarray = [[0, days[6:], dplot, 'Заболеваемость: сырые данные'],
+#             [1, wavg[6:-6], '#ebaf9b', 'Заболеваемость: недельное среднее'],
+#             [2, samp[6:], '#73f587', 'Недельное среднее и тренд']]
+#
+# for s in outarray:
+#     figure = plt.figure(facecolor=dgray, figsize=(8.2, 4.1))
+#     axes = figure.subplots()
+#
+#     for k in range(s[0] + 1):
+#         axes.plot(outarray[k][1], color=outarray[k][2])
+#
+#     setaxes(axes, s[3], 'дни', 'значения')
+#
+#     pdf = PdfPages("covid-%d.pdf" % (s[0]))
+#     pdf.savefig(figure)
+#     pdf.close()
