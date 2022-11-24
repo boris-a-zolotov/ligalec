@@ -11,7 +11,7 @@ tplot = '#385057'
 def setaxes(a, ttl, xl, yl):
     a.set(xlabel=xl, ylabel=yl, facecolor=dgray)  # заголовок, подписи осей, цвет внутри рамок
     a.set_title(ttl, color='w')
-    a.set_ylim(bottom=0)  # фиксированный низ оси y — на нуле
+    a.set_ylim(bottom=0, top=5.95)  # фиксированные пределы по оси y
 
     a.spines['bottom'].set_color(dgray)  # цвета рамок графика
     a.spines['left'].set_color(dgray)
@@ -29,7 +29,15 @@ def unitalize(arr: np.ndarray) -> np.ndarray:  # сделать массив с 
     return arr / npsum / dx
 
 
-sampleSemilength = 2000
+def copyfc(x: np.ndarray) -> np.ndarray:
+    copylen = len(x)
+    retarray = np.zeros(copylen, dtype=float)
+    for cyci in range(copylen):
+        retarray[cyci] = x[cyci]
+    return retarray
+
+
+sampleSemilength = 1600
 kernelSemilength = 1000
 dx = 1 / 2000  # вес одного элемента массива
 
@@ -49,15 +57,6 @@ lbls = range(2 * sampleSemilength - 1)
 lbls = [(x - sampleSemilength + 1) * dx for x in lbls]
 
 plotnumber = 0
-
-
-def copyfc(x: np.ndarray) -> np.ndarray:
-    copylen = len(x)
-    retarray = np.zeros(copylen, dtype=float)
-    for cyci in range(copylen):
-        retarray[cyci] = x[cyci]
-    return retarray
-
 
 outarray = [[0, copyfc(func), 1]]
 
