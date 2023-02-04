@@ -37,9 +37,14 @@ def setaxes(a, ttl, limdn, limup):
     a.tick_params(axis='y', colors='w')
 
 
+# ────────────────────────────────
+# Удаление высоких частот (середины массива)
+# 0 — оставляет в начале пустой сегмент
+# 1 — оставляет в начале сегмент [0]
+
 def side_seg(a: np.ndarray, n: int) -> np.ndarray:
     sl = len(a)
-    res = np.full(sl, 0 + 0j)
+    res = np.full(sl, 0 + 0j)  # иначе real / complex warning
     for sc in range(n):
         res[sc] = a[sc]
         if sc > 0:
@@ -47,29 +52,34 @@ def side_seg(a: np.ndarray, n: int) -> np.ndarray:
     return res
 
 
-fig, ax = plt.subplots()
+# ────────────────────────────────
+# Глобальные параметры: длина сигнала,
+# разбиение на части
 
 signal_length = 48
 signal_parts = 6
 signal_partl = 8
 
 signal = np.zeros(signal_length)
-
 arg = np.zeros(signal_length)
-
 sdv = np.zeros(signal_length)
 
-for x in range(signal_length):
-    sdv[x] = 1.5 * np.pi / 40 * x
-    arg[x] = 0.72 * sdv[x] + 0.28 * math.pow(sdv[x], 2)
+# ────────────────────────────────
+# Заполнение сигнала
 
-cdel = 1.5 * np.pi / arg[40]
+for x in range(signal_length):
+    sdv[x] = 1.5 * np.pi / 40 * x  # хочу, чтобы влезло ровно столько синуса
+    arg[x] = 0.72 * sdv[x] + 0.28 * math.pow(sdv[x], 2)
+    # в конце аргумент синуса будет двигаться быстрее, чем в начале
+
+cdel = 1.5 * np.pi / arg[40]  # нормализация аргумента, а то квадрат всё пошевелил
 
 for x in range(signal_length):
     arg[x] = arg[x] * cdel
     signal[x] = 1.2 * math.sin(arg[x]) + x / 18
+    # слегка возрастающий сдвинутый сжатый к концу синус
 
-for ar_prt in range(signal_parts):
+for ar_prt in range(signal_parts):  # добавление на кусках сигнала случайного многочлена
     cf3 = random.uniform(-0.5, 0.5)
     cf2 = random.uniform(-0.6, 0.6)
     cf1 = random.uniform(-0.7, 0.7)
@@ -79,7 +89,7 @@ for ar_prt in range(signal_parts):
         x = (i - 24) * 0.064
         signal[i] += cf3 * (x ** 3) + cf2 * (x ** 2) + cf1 * x + cf0
 
-fourir = fft.fft(signal)
+fourir = fft.fft(signal)  # преобразование Фурье сигнала; теперь оно и сигнал не меняются
 
 plot_indices = [2, 3, 5, 9, 15, 24, 25]
 frir_indices = [x - 1 for x in plot_indices]
@@ -97,12 +107,12 @@ signal_limdn = (signal_min - gr_ofst) * max_unit_value / signal_by_cm
 signal_limup = (signal_max + gr_ofst) * max_unit_value / signal_by_cm
 fourir_lim = (fourir_max + gr_ofst) * max_unit_value / fourir_by_cm
 
-print(fourir[plot_indices])
 print(max_unit_value)
 
-texwrite = open("aexample.tex", "w")
-texwrite.write("\n")
-texwrite.close()
+if True:
+    texwrite = open("aexample.tex", "w")
+    texwrite.write("\n")
+    texwrite.close()
 
 figure = plt.figure(facecolor=dgray, figsize=(gr_wdth, gs_hght))
 axes = figure.subplots()
@@ -115,13 +125,13 @@ pdf = PdfPages("signal.pdf")
 pdf.savefig(figure)
 pdf.close()
 
-texwrite = open("aexample.tex", "a")
-texwrite.write("\\begin{frame} \\frametitle{\\vspace*{-2.4cm}}\n")
-texwrite.write("    \\incg{python-fourier/signal}\n")
-texwrite.write("\\end{frame}\n")
-texwrite.write("\n")
-texwrite.close()
-
+if True:
+    texwrite = open("aexample.tex", "a")
+    texwrite.write("\\begin{frame} \\frametitle{\\vspace*{-2.4cm}}\n")
+    texwrite.write("    \\incg{python-fourier/signal}\n")
+    texwrite.write("\\end{frame}\n")
+    texwrite.write("\n")
+    texwrite.close()
 
 for i in plot_indices:
     figure = plt.figure(facecolor=dgray, figsize=(gr_wdth, gw_hght))
@@ -132,7 +142,7 @@ for i in plot_indices:
     axes.plot(np.zeros(signal_length), color=tplot)
     axes.plot(np.real(imag_e), color=dplot)
 
-    setaxes(axes, ("Волна с частотой 2π ⋅ %d / %d" % (i-1, signal_length)), -fourir_lim, fourir_lim)
+    setaxes(axes, ("Волна с частотой 2π ⋅ %d / %d" % (i - 1, signal_length)), -fourir_lim, fourir_lim)
 
     pdf = PdfPages("waveform-%d.pdf" % i)
     pdf.savefig(figure)
@@ -150,11 +160,12 @@ for i in plot_indices:
     pdf.savefig(figure)
     pdf.close()
 
-    texwrite = open("aexample.tex", "a")
-    texwrite.write("\\begin{frame} \\frametitle{\\vspace*{-2.4cm}}\n")
-    texwrite.write("    \\incg{python-fourier/waveform-%d}\n" % i)
-    texwrite.write("\n")
-    texwrite.write("    \\incg{python-fourier/fourier-%d}\n" % i)
-    texwrite.write("\\end{frame}\n")
-    texwrite.write("\n")
-    texwrite.close()
+    if True:
+        texwrite = open("aexample.tex", "a")
+        texwrite.write("\\begin{frame} \\frametitle{\\vspace*{-2.4cm}}\n")
+        texwrite.write("    \\incg{python-fourier/waveform-%d}\n" % i)
+        texwrite.write("\n")
+        texwrite.write("    \\incg{python-fourier/fourier-%d}\n" % i)
+        texwrite.write("\\end{frame}\n")
+        texwrite.write("\n")
+        texwrite.close()
