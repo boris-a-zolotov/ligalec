@@ -94,7 +94,7 @@ fourir = fft.fft(signal)  # преобразование Фурье сигнал
 # ────────────────────────────────
 # Определение границ изображения
 
-plot_indices = [2, 3, 5, 9, 15, 24, 25]
+plot_indices = [2, 3, 5, 9, 15, 23, 25]
 frir_indices = [x - 1 for x in plot_indices]
 
 signal_max = np.amax(signal)
