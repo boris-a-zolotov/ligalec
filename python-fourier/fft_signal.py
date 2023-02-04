@@ -91,12 +91,16 @@ for ar_prt in range(signal_parts):  # добавление на кусках с�
 
 fourir = fft.fft(signal)  # преобразование Фурье сигнала; теперь оно и сигнал не меняются
 
+# ────────────────────────────────
+# Определение границ изображения
+
 plot_indices = [2, 3, 5, 9, 15, 24, 25]
 frir_indices = [x - 1 for x in plot_indices]
 
 signal_max = np.amax(signal)
 signal_min = np.amin(signal)
-fourir_max = np.amax(np.absolute(fourir[frir_indices])) / 24
+fourir_max = np.amax(np.absolute(fourir[frir_indices])) / signal_length * 2
+# делить, потому что формула. *2, потому что рисуем вклад двух симметричных волн
 
 signal_by_cm = (signal_max - signal_min + 2 * gr_ofst) / gs_hght
 fourir_by_cm = (2 * fourir_max + 2 * gr_ofst) / gw_hght
@@ -106,8 +110,9 @@ max_unit_value = max(signal_by_cm, fourir_by_cm)
 signal_limdn = (signal_min - gr_ofst) * max_unit_value / signal_by_cm
 signal_limup = (signal_max + gr_ofst) * max_unit_value / signal_by_cm
 fourir_lim = (fourir_max + gr_ofst) * max_unit_value / fourir_by_cm
+# ужать тот график, который закладывает меньшую разницу значений в отрезок 1 см
 
-print(max_unit_value)
+print(max_unit_value)  # проверка, что пределы по оси $y$ не безумно большие
 
 if True:
     texwrite = open("aexample.tex", "w")
@@ -116,11 +121,9 @@ if True:
 
 figure = plt.figure(facecolor=dgray, figsize=(gr_wdth, gs_hght))
 axes = figure.subplots()
-
 axes.plot(signal, color=dplot)
 
 setaxes(axes, ("Сигнал длины %d" % signal_length), signal_limdn, signal_limup)
-
 pdf = PdfPages("signal.pdf")
 pdf.savefig(figure)
 pdf.close()
@@ -134,28 +137,26 @@ if True:
     texwrite.close()
 
 for i in plot_indices:
+    imag_e = [fourir[i - 1] / signal_length * 2 *
+              np.exp(2 * np.pi * 1j / signal_length * (i - 1) * x)
+              for x in range(signal_length)]
+
     figure = plt.figure(facecolor=dgray, figsize=(gr_wdth, gw_hght))
     axes = figure.subplots()
-
-    imag_e = [fourir[i - 1] / 24 * np.exp(2 * np.pi * 1j / signal_length * (i - 1) * x) for x in range(signal_length)]
-
     axes.plot(np.zeros(signal_length), color=tplot)
     axes.plot(np.real(imag_e), color=dplot)
 
     setaxes(axes, ("Волна с частотой 2π ⋅ %d / %d" % (i - 1, signal_length)), -fourir_lim, fourir_lim)
-
     pdf = PdfPages("waveform-%d.pdf" % i)
     pdf.savefig(figure)
     pdf.close()
 
     figure = plt.figure(facecolor=dgray, figsize=(gr_wdth, gs_hght))
     axes = figure.subplots()
-
     axes.plot(np.real(fft.ifft(side_seg(fourir, i - 1))), color=tplot)
     axes.plot(np.real(fft.ifft(side_seg(fourir, i))), color=dplot)
 
     setaxes(axes, ' ', signal_limdn, signal_limup)
-
     pdf = PdfPages("fourier-%d.pdf" % i)
     pdf.savefig(figure)
     pdf.close()
