@@ -5,25 +5,36 @@ import numpy.fft as fft
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
-dgray = '#0f0f0f'  # цвета фона и графиков
-dplot = '#96e6ff'
-tplot = '#385057'
+# ────────────────────────────────
+# Параметры графики
+
+dgray = '#0f0f0f'  # серый фон 15 / 15 / 15
+dplot = '#96e6ff'  # основной яркий график
+tplot = '#385057'  # устаревший бледный график
+
+gr_wdth = 8.4  # ширина всех картинок
+gs_hght = 2.7  # высота картинок с сигналами
+gw_hght = 1.8  # высота картинок с волнами
+gr_ofst = 0.2  # поля сверху и снизу
 
 
-def setaxes(a, ttl, alim):
+# ────────────────────────────────
+# Установка параметров графики
+
+def setaxes(a, ttl, limdn, limup):
     a.set(xlabel=' ', ylabel=' ', facecolor=dgray)  # подписи осей пустые (сегодня только числа)
     a.set_title(ttl, color='w')
-    a.set_ylim(bottom=-alim, top=alim)  # фиксированные пределы по оси y
+    a.set_ylim(bottom=limdn, top=limup)
 
     a.spines['bottom'].set_color(dgray)  # цвета рамок графика
     a.spines['left'].set_color(dgray)
     a.spines['right'].set_color(dgray)
     a.spines['top'].set_color(dgray)
 
-    a.xaxis.label.set_color('white')  # цвета штрихов на осях и подписей
-    a.yaxis.label.set_color('white')
-    a.tick_params(axis='x', colors='white')
-    a.tick_params(axis='y', colors='white')
+    a.xaxis.label.set_color('w')  # цвета штрихов на осях и подписей
+    a.yaxis.label.set_color('w')
+    a.tick_params(axis='x', colors='w')
+    a.tick_params(axis='y', colors='w')
 
 
 def side_seg(a: np.ndarray, n: int) -> np.ndarray:
@@ -77,7 +88,14 @@ signal_max = np.amax(signal)
 signal_min = np.amin(signal)
 fourir_max = np.amax(np.absolute(fourir[frir_indices])) / 24
 
-max_unit_value = max((signal_max - signal_min + 0.8) / 2.7, (2 * fourir_max + 0.8) / 1.8)
+signal_by_cm = (signal_max - signal_min + 2 * gr_ofst) / gs_hght
+fourir_by_cm = (2 * fourir_max + 2 * gr_ofst) / gw_hght
+
+max_unit_value = max(signal_by_cm, fourir_by_cm)
+
+signal_limdn = (signal_min - gr_ofst) * max_unit_value / signal_by_cm
+signal_limup = (signal_max + gr_ofst) * max_unit_value / signal_by_cm
+fourir_lim = (fourir_max + gr_ofst) * max_unit_value / fourir_by_cm
 
 print(fourir[plot_indices])
 print(max_unit_value)
@@ -86,12 +104,12 @@ texwrite = open("aexample.tex", "w")
 texwrite.write("\n")
 texwrite.close()
 
-figure = plt.figure(facecolor=dgray, figsize=(8.4, 2.7))
+figure = plt.figure(facecolor=dgray, figsize=(gr_wdth, gs_hght))
 axes = figure.subplots()
 
 axes.plot(signal, color=dplot)
 
-setaxes(axes, ("Сигнал длины %d" % signal_length), 2.7 * max_unit_value)
+setaxes(axes, ("Сигнал длины %d" % signal_length), signal_limdn, signal_limup)
 
 pdf = PdfPages("signal.pdf")
 pdf.savefig(figure)
@@ -106,7 +124,7 @@ texwrite.close()
 
 
 for i in plot_indices:
-    figure = plt.figure(facecolor=dgray, figsize=(8.4, 1.8))
+    figure = plt.figure(facecolor=dgray, figsize=(gr_wdth, gw_hght))
     axes = figure.subplots()
 
     imag_e = [fourir[i - 1] / 24 * np.exp(2 * np.pi * 1j / signal_length * (i - 1) * x) for x in range(signal_length)]
@@ -114,19 +132,19 @@ for i in plot_indices:
     axes.plot(np.zeros(signal_length), color=tplot)
     axes.plot(np.real(imag_e), color=dplot)
 
-    setaxes(axes, ("Волна с частотой 2π ⋅ %d / %d" % (i-1, signal_length)), 1.8 * max_unit_value)
+    setaxes(axes, ("Волна с частотой 2π ⋅ %d / %d" % (i-1, signal_length)), -fourir_lim, fourir_lim)
 
     pdf = PdfPages("waveform-%d.pdf" % i)
     pdf.savefig(figure)
     pdf.close()
 
-    figure = plt.figure(facecolor=dgray, figsize=(8.4, 2.7))
+    figure = plt.figure(facecolor=dgray, figsize=(gr_wdth, gs_hght))
     axes = figure.subplots()
 
     axes.plot(np.real(fft.ifft(side_seg(fourir, i - 1))), color=tplot)
     axes.plot(np.real(fft.ifft(side_seg(fourir, i))), color=dplot)
 
-    setaxes(axes, ' ', 2.7 * max_unit_value)
+    setaxes(axes, ' ', signal_limdn, signal_limup)
 
     pdf = PdfPages("fourier-%d.pdf" % i)
     pdf.savefig(figure)
