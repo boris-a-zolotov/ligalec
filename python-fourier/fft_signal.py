@@ -114,6 +114,9 @@ fourir_lim = (fourir_max + gr_ofst) * max_unit_value / fourir_by_cm
 
 print(max_unit_value)  # проверка, что пределы по оси $y$ не безумно большие
 
+# ────────────────────────────────
+# Рисуем и пишем
+
 if True:
     texwrite = open("aexample.tex", "w")
     texwrite.write("\n")
@@ -136,7 +139,11 @@ if True:
     texwrite.write("\n")
     texwrite.close()
 
+# ────────────────────────────────
+# Главный цикл по графикам
+
 for i in plot_indices:
+    # Слагаемое, которое пойдёт в сумму (ifft, два симметричных)
     imag_e = [fourir[i - 1] / signal_length * 2 *
               np.exp(2 * np.pi * 1j / signal_length * (i - 1) * x)
               for x in range(signal_length)]
@@ -152,7 +159,7 @@ for i in plot_indices:
     pdf.close()
 
     figure = plt.figure(facecolor=dgray, figsize=(gr_wdth, gs_hght))
-    axes = figure.subplots()
+    axes = figure.subplots()  # side_seg подобраны так, чтобы разность была i–1-ой частотой
     axes.plot(np.real(fft.ifft(side_seg(fourir, i - 1))), color=tplot)
     axes.plot(np.real(fft.ifft(side_seg(fourir, i))), color=dplot)
 
