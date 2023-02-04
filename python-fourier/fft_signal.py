@@ -3,17 +3,15 @@ import math
 import random
 import numpy.fft as fft
 import matplotlib.pyplot as plt
-
 from matplotlib.backends.backend_pdf import PdfPages
 
 dgray = '#0f0f0f'  # цвета фона и графиков
 dplot = '#96e6ff'
 tplot = '#385057'
-splot = '#756325'
 
 
 def setaxes(a, ttl, alim):
-    a.set(xlabel=' ', ylabel=' ', facecolor=dgray)  # заголовок, подписи осей, цвет внутри рамок
+    a.set(xlabel=' ', ylabel=' ', facecolor=dgray)  # подписи осей пустые (сегодня только числа)
     a.set_title(ttl, color='w')
     a.set_ylim(bottom=-alim, top=alim)  # фиксированные пределы по оси y
 
@@ -58,13 +56,13 @@ cdel = 1.5 * np.pi / arg[40]
 
 for x in range(signal_length):
     arg[x] = arg[x] * cdel
-    signal[x] = math.sin(arg[x]) + x / 18
+    signal[x] = 1.2 * math.sin(arg[x]) + x / 18
 
 for ar_prt in range(signal_parts):
     cf3 = random.uniform(-0.5, 0.5)
     cf2 = random.uniform(-0.6, 0.6)
     cf1 = random.uniform(-0.7, 0.7)
-    cf0 = random.uniform(-0.8, 0.8)
+    cf0 = random.uniform(-1.2, 1.2)
     for ar_pos in range(signal_partl):
         i = ar_prt * signal_partl + ar_pos
         x = (i - 24) * 0.064
@@ -85,7 +83,7 @@ print(fourir[plot_indices])
 print(max_unit_value)
 
 texwrite = open("aexample.tex", "w")
-texwrite.write("    ")
+texwrite.write("\n")
 texwrite.close()
 
 figure = plt.figure(facecolor=dgray, figsize=(8.4, 2.7))
@@ -113,6 +111,7 @@ for i in plot_indices:
 
     imag_e = [fourir[i - 1] / 24 * np.exp(2 * np.pi * 1j / signal_length * (i - 1) * x) for x in range(signal_length)]
 
+    axes.plot(np.zeros(signal_length), color=tplot)
     axes.plot(np.real(imag_e), color=dplot)
 
     setaxes(axes, ("Волна с частотой 2π ⋅ %d / %d" % (i-1, signal_length)), 1.8 * max_unit_value)
