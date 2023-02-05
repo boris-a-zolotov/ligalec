@@ -3,7 +3,7 @@
 \usefonttheme{professionalfonts}
 
 \usepackage{amsmath,amssymb,amsthm,mathtools}
-\usepackage{xcolor,graphicx}
+\usepackage{xcolor,graphicx,makecell}
 \usepackage[russian]{babel}
 
 \usepackage{tikz}
@@ -214,7 +214,11 @@
 	 {\bfseries\itshape А вот это уже интересно…}
 \end{itemize} \bigskip
 
-\begin{center}\Large\bf Спасибо за внимание! \end{center}
+\begin{center} \begin{tabular}{cccc}
+	\hspace{0.5cm} &
+	\makecell[c]{\Large\bf Спасибо за внимание!} & \hspace{0.1cm} &
+	\makecell[c]{\includegraphics[height=1.6cm]{img/githubqr}} \\
+\end{tabular} \end{center}
 \end{frame}
 
 \end{document}
