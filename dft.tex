@@ -87,6 +87,25 @@
    мы всё ещё что-то содержательное можем сказать про вектор.
 \end{frame}
 
+\begin{frame} \frametitle{Скалярное произведение}
+	\begin{center} \tikz[scale=0.72]{
+		\draw[thick,dashed,LightPink] (2,3)
+		   node[circle,fill=LightPink,inner sep=0.45mm]{} -- (2,0);
+		\draw[thick,LightGreen,->] (0,0) -- (2,3)
+			node[right]{\small \((2, 1.5, 3)\)};
+		\draw[thick,->] (0,0) -- (4,0);
+		\draw[thick,->] (0,0) -- (0,4);
+		\draw[thick,LightPink,->] (0,0) -- (2,0) node[below]{\small \(2\)};
+	} \end{center}
+   \(\text{Координата} = \text{Длина проекции на ось} =
+      \text{Коэффициент в сумме} =\)\\
+   \(= \text{\bfseries\itshape Скалярное произведение}\) \bigskip
+
+   Скалярное произведение тем больше, чем более вектора {\bfseries\itshape похожи.}
+\end{frame}
+
+\section{advanced-waves}
+
 \begin{frame} \frametitle{Какой-то сигнал}
 	\begin{center}
 	  \begin{tikzpicture}[scale=0.48, declare function={
@@ -105,7 +124,7 @@
    чтобы они помнили содержательную информацию о нём?
 \end{frame}
 
-\begin{frame} \frametitle{Какой-то сигнал}
+\begin{frame} \frametitle{Представление через значения в точках}
 	\begin{center}
 	  \begin{tikzpicture}[scale=0.48, declare function={
 	     sdv(\x) = 0.47124 * \x;
@@ -173,7 +192,7 @@
 
 \centerline{\includegraphics[width=0.6\textwidth]{img/sc_orto}}\vspace{-4mm}
 
-Совсем непохожи~— примерно 0.
+Совсем непохожи~— примерно 0.\ \ {\bfseries\itshape Это скалярное произведение!}
 \end{frame}
 
 \section{show-stopper}
