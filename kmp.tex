@@ -30,6 +30,7 @@
 
 \DeclarePairedDelimiter{\lr}{(}{)}
 \DeclarePairedDelimiter{\atdeg}{[}{]}
+\DeclarePairedDelimiter{\len}{|}{|}
 \newcommand{\br}{\mathbb{R}}
 \tikzset{>={Latex[width=1.2mm,length=2.8mm]}}
 
@@ -46,7 +47,7 @@
 \newcommand{\proj}[3]{(0.97 * #1 cm + 0.72 * #2 cm,
                        #3 cm + 0.35 * #2 cm - 0.24254 * #1 cm)}
 
-   \title{Алгоритм Кнута — Морриса — Пратта}
+   \title{Задача поиска подстроки в строке}
    \date{\today}
    \author{Золотов Борис Алексеевич, аспирант МКН СПбГУ, \\ преподаватель ЛНМО}
    \institute{«Лига Лекторов», 3 сезон, полуфинал}
@@ -54,12 +55,34 @@
 \begin{document} \maketitle
 
 \begin{frame} \frametitle{Наивный алгоритм}
-\tikz{
+Начиная с каждой позиции в \(T\), сравнивать символы в \(T\) и \(S\);\\
+если удаётся дойти до конца \(S\) — мы нашли вхождение. \bigskip
+
+\begin{center} \tikz[xscale=0.8,yscale=0.65]{
 	\input{python-kmp/intikz}
-}
+	\node at (-0.8, 0.4) {\(T=\)};
+	\node at (-0.8, -0.8) {\(S=\)};
+} \end{center}
+\end{frame}
+
+
+\begin{frame} \frametitle{Проблема наивного алгоритма}
+В худшем случае придётся сделать примерно \(\len*{S} \cdot \len*{T}\) индивидуальных сравнений символов — представляете, просмотреть длинный текст несколько раз?
+\end{frame}
+
+
+\begin{frame} \frametitle{Префикс-функция}
+Представим, что про каждую позицию \(i\) строки \(S\) мы знаем\\
+наибольшую длину \(\ell< i\) начального куска \(S\), который\\
+совпадает с \(\ell\) символами перед позицией \(i\). \bigskip
+
+\input{tex-graphics/prefixf} \bigskip
+
+Мы научимся находить эти числа, {\bfseries\itshape но потом.}
 \end{frame}
 
 \end{document}
+
 
 \begin{frame} \frametitle{}
 \end{frame}
