@@ -11,6 +11,9 @@
 
 \definecolor{dgray}{RGB}{15,15,15}
 \definecolor{dplot}{HTML}{96e6ff}
+\definecolor{ltr1}{HTML}{8ec1f5}
+\definecolor{ltr2}{HTML}{fac293}
+\definecolor{ltr3}{HTML}{ffc4ed}
 
 \usebackgroundtemplate{%
 	\includegraphics[width=\paperwidth,height=\paperheight]{img/lile-back-dgray}%
@@ -43,6 +46,7 @@
 }
 
 \newcommand{\incg}[1]{\includegraphics[width=0.88\textwidth]{#1}}
+\newcommand{\kmpstext}{Пример}
 
 \newcommand{\proj}[3]{(0.97 * #1 cm + 0.72 * #2 cm,
                        #3 cm + 0.35 * #2 cm - 0.24254 * #1 cm)}
@@ -54,12 +58,33 @@
 
 \begin{document} \maketitle
 
+\begin{frame} \frametitle{Задача поиска подстроки в строке}
+	Дан {\itshape\bfseries текст} \(T\) и {\itshape\bfseries образец} \(S\); проверить,
+	содержится ли \(S\) в \(T\) —\\
+	как «кад» содержится в «абракадабра». \bigskip\bigskip \pause
+
+	Вы скажете: я просто нажимаю\ \ \begin{tikzpicture}%
+	   [baseline={([yshift=-0.75ex]current bounding box.center)}]
+	      \node[rectangle,draw=white,rounded corners=0.15cm,
+	         text height=1.7ex,text depth=0.2ex,inner sep=0.2cm] at (0,0) {Ctrl};
+	      \node[text height=1.7ex,text depth=0.2ex,inner sep=0.2cm] at (0.9,0) {\(+\)};
+	      \node[rectangle,draw=white,rounded corners=0.15cm,
+	         text height=1.7ex,text depth=0.2ex,inner sep=0.2cm] at (1.6,0) {F};
+	\end{tikzpicture} , в чём проблема? \bigskip\bigskip \pause
+
+	Вы-то понятно, но что в этот момент думает компьютер? \bigskip \pause
+
+	Будем считать, что текст {\bfseries\itshape очень длинный} \\
+	и, возможно, дописывается прямо сейчас.
+\end{frame}
+
+
 \begin{frame} \frametitle{Наивный алгоритм}
 Начиная с каждой позиции в \(T\), сравнивать символы в \(T\) и \(S\);\\
 если удаётся дойти до конца \(S\) — мы нашли вхождение. \bigskip
 
 \begin{center} \tikz[xscale=0.8,yscale=0.65]{
-	\input{python-kmp/intikz}
+	\input{python-kmp/naïve-search}
 	\node at (-0.8, 0.4) {\(T=\)};
 	\node at (-0.8, -0.8) {\(S=\)};
 } \end{center}
@@ -71,6 +96,9 @@
 \end{frame}
 
 
+\input{python-kmp/kmp-search}
+
+
 \begin{frame} \frametitle{Префикс-функция}
 Представим, что про каждую позицию \(i\) строки \(S\) мы знаем\\
 наибольшую длину \(\ell< i\) начального куска \(S\), который\\
@@ -80,10 +108,6 @@
 
 Мы научимся находить эти числа, {\bfseries\itshape но потом.}
 \end{frame}
-
-
-\input{python-kmp/kmp-search}
-
 
 \end{document}
 
