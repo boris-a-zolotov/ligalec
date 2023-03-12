@@ -143,12 +143,12 @@
 Пусть мы ищем подстроку \textcolor{ltr1}{1}\textcolor{ltr3}{3}\textcolor{ltr1}{1}:
 
   \textcolor{white}{\Large \[    
-    \text{\textcolor{ltr1}{1}} \cdot 3^{2} +
-    \text{\textcolor{ltr3}{3}} \cdot 3^{1} +
-    \text{\textcolor{ltr1}{1}} \cdot 3^{0} = 5 \pmod 7.
-  \]}
+    \text{\textcolor{ltr1}{1}} \cdot 3^{2}\,+\,
+    \text{\textcolor{ltr3}{3}} \cdot 3^{1}\,+\,
+    \text{\textcolor{ltr1}{1}} \cdot 3^{0}\,=\,5 \pmod 7.
+  \]} \bigskip
 
-Последовательно считаем хэши кусков \(T\) подходящей длины,\\
+Последовательно считаем хэши кусков \(T\) нужной длины,\\
 если хэш совпал с хэшом \(S\) — сравниваем посимвольно.
 \end{frame}
 
@@ -229,7 +229,7 @@
 
 \begin{frame} \frametitle{Конечные автоматы}
   Номера банковских карт: 12 цифр, но
-   \[\sum \lr*{2 * a_{2i}} \bmod 9 + a_{2i+1}\ \ \divsby\ \ 10.\] \bigskip
+   \[\sum \lr*{2 \cdot a_{2i}} \bmod 9 + a_{2i+1}\ \ \divsby\ \ 10.\] \bigskip
 
   Корректные даты, пароли, номера телефонов,\\
   пункты задач олимпиад…\\
