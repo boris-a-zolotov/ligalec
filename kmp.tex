@@ -45,8 +45,15 @@
 	\end{block} \end{column} \end{columns} \end{center}
 }
 
+\newcommand{\rthtd}[1]{
+    node[right,text height = 3ex,text depth = 1ex]{#1}
+}
+
+\newcommand{\divsby}{
+   \mathrel{\rlap{.}\rlap{\raisebox{0.55ex}{.}}\raisebox{1.1ex}{.}}}
+
 \newcommand{\incg}[1]{\includegraphics[width=0.88\textwidth]{#1}}
-\newcommand{\kmpstext}{Пример}
+\newcommand{\kmpstext}{Кнут — Моррис — Пратт; пример}
 
 \newcommand{\proj}[3]{(0.97 * #1 cm + 0.72 * #2 cm,
                        #3 cm + 0.35 * #2 cm - 0.24254 * #1 cm)}
@@ -57,6 +64,9 @@
    \institute{«Лига Лекторов», 3 сезон, полуфинал}
 
 \begin{document} \maketitle
+
+
+\section{substring-problem}
 
 \begin{frame} \frametitle{Задача поиска подстроки в строке}
 	Дан {\itshape\bfseries текст} \(T\) и {\itshape\bfseries образец} \(S\); проверить,
@@ -78,6 +88,8 @@
 	и, возможно, дописывается прямо сейчас.
 \end{frame}
 
+
+\section{naive-search}
 
 \begin{frame} \frametitle{Наивный алгоритм}
 Начиная с каждой позиции в \(T\), сравнивать символы в \(T\) и \(S\);\\
@@ -112,6 +124,8 @@
 \end{frame}
 
 
+\section{hash}
+
 \begin{frame} \frametitle{Хэш}
 Проблема: чтобы выяснить, что \(S\) не равно куску \(T\), \\
 нужно много сравнений. \bigskip
@@ -123,24 +137,128 @@
 \end{frame}
 
 
-\input{python-kmp/kmp-search}
+\begin{frame} \frametitle{Алгоритм Рабина — Карпа}
+Значение хэша: многочлен, коэффициенты которого~—\\
+символы строки; взять остаток от деления на простое число.\\
+Пусть мы ищем подстроку \textcolor{ltr1}{1}\textcolor{ltr3}{3}\textcolor{ltr1}{1}:
 
+  \textcolor{white}{\Large \[    
+    \text{\textcolor{ltr1}{1}} \cdot 3^{2} +
+    \text{\textcolor{ltr3}{3}} \cdot 3^{1} +
+    \text{\textcolor{ltr1}{1}} \cdot 3^{0} = 5 \pmod 7.
+  \]}
+
+Последовательно считаем хэши кусков \(T\) подходящей длины,\\
+если хэш совпал с хэшом \(S\) — сравниваем посимвольно.
+\end{frame}
+
+
+\section{hash-example}
+
+\begin{frame} \frametitle{Рабин — Карп; пересчёт хэша}
+  \begin{center} \begin{tikzpicture}[xscale=0.71,yscale=0.87]
+    \input{python-kmp/rabin-karp}
+  \end{tikzpicture} \end{center}
+\end{frame}
+
+
+\begin{frame} \frametitle{Рабин — Карп; проблема совпадения хэшей}
+  \begin{center} \begin{tikzpicture}[xscale=0.71,yscale=0.87]
+    \input{python-kmp/rabin-karp-coinc}
+  \end{tikzpicture} \end{center}
+\end{frame}
+
+
+\section{kmp}
+
+\begin{frame} \frametitle{Алгоритм Кнута — Морриса — Пратта}
+Попробуем снова посимвольно сравнивать \(S\) и \(T\),\\
+но придумаем, как избегать ненужных сравнений,\\
+если строка \(S\) правильно предобработана.\bigskip \pause
+
+С каких позиций в \(T\) может начинаться \(S\)?
+\end{frame}
+
+
+\section{kmp-example}
+
+\input{python-kmp/kmp-search-short}
+
+
+\section{prefix-function}
 
 \begin{frame} \frametitle{Префикс-функция}
-Представим, что про каждую позицию \(i\) строки \(S\) мы знаем\\
-наибольшую длину \(\ell< i\) начального куска \(S\), который\\
-совпадает с \(\ell\) символами перед позицией \(i\). \bigskip
+Какая информация нам была нужна? Про каждую\\
+позицию \(i\) строки \(S\) — наибольшая длина \(\ell< i\)\\
+начального куска \(S\), который совпадает\\
+с \(\ell\) символами перед позицией \(i\). \bigskip
 
-\input{tex-graphics/prefixf} \bigskip
+{\itshape\bfseries Это} называется префикс-функцией; \(π(i)\). \bigskip
 
-Мы научимся находить эти числа, {\bfseries\itshape но потом.}
+\input{tex-graphics/prefixf}
+\end{frame}
+
+
+\section{prefix-function-calculation}
+
+\begin{frame} \frametitle{Вычисление префикс-функции}
+\[ k = π(i);\qquad \begin{cases}
+  π(i+1) = k+1, & s(i+1) = s(k+1), \\
+  π(i+1) = 0, & k=0 \text{\ \ и\ \ } s(i+1) \ne s(1), \\
+  k \coloneqq π(k), & \text{иначе.}
+\end{cases} \] \bigskip
+
+\input{tex-graphics/prefixf-cont}
+\end{frame}
+
+
+\section{finite-automata}
+
+\begin{frame} \frametitle{Конечные автоматы}
+  Мы привели алгоритм распознавания строк, содержащих \(S\):
+	\[*\,S\,*\] \bigskip
+
+  Бывает полезно распознавать электронные адреса:
+   \[
+     [\text{нет @}]
+      \text{\,@\,}
+     [\text{нет точек, @}]\,.\,[\text{com}|\text{ru}|\ldots]
+   \]
+\end{frame}
+
+
+\begin{frame} \frametitle{Конечные автоматы}
+  Номера банковских карт: 12 цифр, но
+   \[\sum \lr*{2 * a_{2i}} \bmod 9 + a_{2i+1}\ \ \divsby\ \ 10.\] \bigskip
+
+  Корректные даты, пароли, номера телефонов,\\
+  пункты задач олимпиад…\\
+  Вычислительная модель, эффективно распознающая\\
+  такие строки~— {\itshape\bfseries конечный автомат.}
+\end{frame}
+
+
+\section{conclusion}
+
+\begin{frame} \frametitle{\vspace*{-2.4cm}}
+\begin{itemize}
+	\item Для решения задачи поиска подстроки есть наивный алгоритм,\\
+	 \(\len*{T} \cdot \len*{S}\) сравнений символов; \medskip
+	\item Алгоритм Рабина — Карпа, \(\len*{T} + \len*{S}\) арифметических операций\\
+	 и сравнений {\itshape\bfseries в среднем,}\\
+	 но иногда хэши неравных подстрок совпадают; \medskip
+	\item Алгоритм Кнута — Морриса — Пратта,\\
+	 \(\len*{T} + \len*{S}\) сравнений символов.
+\end{itemize} \bigskip
+
+\begin{center}
+	\Large\bf Спасибо за внимание!
+\end{center}
 \end{frame}
 
 \end{document}
 
 
-\begin{frame} \frametitle{}
-\end{frame}
 
 \begin{nblock}{\vspace*{-3ex}}
 	Sample text
