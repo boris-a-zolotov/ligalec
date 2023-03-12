@@ -1,0 +1,19 @@
+\begin{center} \begin{tikzpicture}[xscale=0.7]
+	\node at (0,0) {\Large 1}; \node at (1,0) {\Large 2}; \node at (2,0) {\Large 1};
+	\node at (3,0) {\Large 3}; \node at (4,0) {\Large 1}; \node at (5,0) {\Large 2};
+	\node at (6,0) {\Large 1}; \node at (7,0) {\Large 2}; \node at (8,0) {\Large 1};
+	\node at (9,0) {\Large 3};
+	
+	\draw[Plum,->] (6.45,0.35) -- (7.45,0.35);
+	\node at (6.35,-0.35) {\scriptsize \color{Pink} 3}; \pause
+	\draw[Plum,->] (6.35,0.35) to[out=150,in=30] (2.35,0.35);
+
+	
+	\draw[Plum,->] (2.45,0.35) -- (3.45,0.35)
+		node[pos = 0.35]{\scriptsize \color{Plum} \(\times\)};
+	\node at (2.35,-0.35) {\scriptsize \color{Pink} 1}; \pause	
+	\draw[Plum,->] (2.35,0.35) to[out=150,in=30] (0.35,0.35);
+
+	\draw[Plum,->] (0.45,0.35) -- (1.45,0.35); \pause
+	\node at (7.35,-0.35) {\footnotesize \color{Pink} 2};
+\end{tikzpicture} \end{center}
