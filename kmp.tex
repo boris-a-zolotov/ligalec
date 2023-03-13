@@ -15,10 +15,6 @@
 \definecolor{ltr2}{HTML}{fac293}
 \definecolor{ltr3}{HTML}{ffc4ed}
 
-\usebackgroundtemplate{%
-	\includegraphics[width=\paperwidth,height=\paperheight]{img/lile-back-dgray}%
-}
-
 \setbeamersize{text margin left=12mm,text margin right=12mm}
 \addtolength{\headsep}{0.55cm}
 \setbeamertemplate{frametitle}[default][left,leftskip=0.85cm]
@@ -63,8 +59,18 @@
    \author{Золотов Борис Алексеевич, аспирант МКН СПбГУ, \\ преподаватель ЛНМО}
    \institute{«Лига Лекторов», 3 сезон, полуфинал}
 
-\begin{document} \maketitle
+\begin{document} \section{titlepage}
 
+\usebackgroundtemplate{%
+	\includegraphics[width=\paperwidth,height=\paperheight]{photo/lector.pdf}%
+}
+
+\begin{frame} \frametitle{ }
+\end{frame}
+
+\usebackgroundtemplate{%
+	\includegraphics[width=\paperwidth,height=\paperheight]{img/lile-back-dgray}%
+}
 
 \section{substring-problem}
 
@@ -228,7 +234,7 @@
 
 
 \begin{frame} \frametitle{Конечные автоматы}
-  Номера банковских карт: 12 цифр, но
+  Номера банковских карт: 16 цифр, но
    \[\sum \lr*{2 \cdot a_{2i}} \bmod 9 + a_{2i+1}\ \ \divsby\ \ 10.\] \bigskip
 
   Корректные даты, пароли, номера телефонов,\\
